@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Search Tree (BST) Animation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .canvas-container {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideUp 0.6s ease-out forwards;
+        }
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body class="p-6 md:p-10 text-slate-800">
+    <div class="max-w-6xl mx-auto">
+        <!-- 頂部控制面板 -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-800 mb-2">🌳 Unique BST Generator</h1>
+                <p class="text-slate-500 text-sm">Enter the number of nodes n. The system will generate all possible structures using Catalan number logic and animate them.</p>
+            </div>
+            
+            <div class="flex items-center gap-3 bg-slate-50 p-2 rounded-xl border border-slate-200">
+                <label for="n-input" class="font-medium text-slate-700 ml-2">Nodes (n):</label>
+                <input type="number" id="n-input" value="3" min="1" max="5" 
+                       class="w-16 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center font-bold text-lg">
+                <button onclick="generateAndAnimate()" 
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium transition-colors shadow-sm">
+                    Start Animation
+                </button>
+            </div>
+        </div>
+
+        <!-- 狀態提示 -->
+        <div id="status-container" class="hidden mb-6 p-4 rounded-xl bg-blue-50 border border-blue-100 text-blue-800 flex items-center gap-3">
+            <svg class="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" id="loading-icon">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span id="status-text" class="font-medium">Preparing...</span>
+        </div>
+
+        <!-- 畫布網格區域 -->
+        <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- 樹的畫布會被動態加入這裡 -->
+        </div>
+    </div>
+
+    <script>
+        // --- 1. 定義樹的節點與生成邏輯 (對應 C++ 邏輯) ---
+        class TreeNode {
+            constructor(val, left = null, right = null) {
+                this.val = val;
+                this.left = left;
+                this.right = right;
+            }
+        }
+
+        // 遞迴生成所有 BST
+        function buildTrees(start, end) {
+            let allTrees = [];
+            if (start > end) {
+                allTrees.push(null);
+                return allTrees;
+            }
+
+            for (let i = start; i <= end; i++) {
+                let leftTrees = buildTrees(start, i - 1);
+                let rightTrees = buildTrees(i + 1, end);
+
+                for (let l of leftTrees) {
+                    for (let r of rightTrees) {
+                        allTrees.push(new TreeNode(i, l, r));
+                    }
+                }
+            }
+            return allTrees;
+        }
+
+        // --- 2. 畫布動畫邏輯 ---
+        const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+        // 動態繪製單一棵樹
+        async function drawTree(ctx, node, x, y, dx, dy, pX, pY) {
+            if (!node) return;
+
+            // 繪製與父節點相連的線條
+            if (pX !== null && pY !== null) {
+                ctx.beginPath();
+                ctx.moveTo(pX, pY);
+                ctx.lineTo(x, y);
+                ctx.strokeStyle = '#cbd5e1'; // 淺灰藍色線條
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                await sleep(50); // 線條延遲
+            }
+
+            // 繪製目前的節點 (圓圈)
+            ctx.beginPath();
+            ctx.arc(x, y, 16, 0, 2 * Math.PI);
+            ctx.fillStyle = '#eff6ff'; // 淺藍色底
+            ctx.fill();
+            ctx.strokeStyle = '#3b82f6'; // 藍色邊框
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // 繪製節點數字
+            ctx.fillStyle = '#1e3a8a';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = 'bold 15px sans-serif';
+            ctx.fillText(node.val, x, y);
+
+            await sleep(80); // 節點延遲
+
+            // 遞迴繪製子節點，逐漸縮小水平間距 (dx/2)
+            if (node.left) await drawTree(ctx, node.left, x - dx, y + dy, dx / 2, dy, x, y);
+            if (node.right) await drawTree(ctx, node.right, x + dx, y + dy, dx / 2, dy, x, y);
+        }
+
+        // --- 3. 主流程：點擊按鈕後觸發 ---
+        async function generateAndAnimate() {
+            const n = parseInt(document.getElementById('n-input').value);
+            const statusContainer = document.getElementById('status-container');
+            const statusText = document.getElementById('status-text');
+            const loadingIcon = document.getElementById('loading-icon');
+            const grid = document.getElementById('grid');
+
+            if (isNaN(n) || n < 1 || n > 5) {
+                alert('For performance and layout reasons, please enter a number between 1 and 5!');
+                return;
+            }
+
+            // 初始化 UI 狀態
+            grid.innerHTML = '';
+            statusContainer.classList.remove('hidden');
+            loadingIcon.classList.remove('hidden');
+            statusText.innerText = `Calculating all possible combinations for n = ${n}...`;
+            
+            await sleep(100); // 讓瀏覽器有時間渲染提示文字
+
+            // 執行演算法生成樹
+            const trees = buildTrees(1, n);
+            
+            statusText.innerText = `Calculation complete! Found ${trees.length} unique binary search trees. Starting animation...`;
+            
+            // 建立每個樹的 Canvas 畫布
+            const canvases = [];
+            for (let i = 0; i < trees.length; i++) {
+                const wrapper = document.createElement('div');
+                // 加上 CSS 動畫延遲，讓卡片有依序浮現的效果
+                wrapper.className = 'canvas-container bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center p-4 overflow-hidden relative';
+                wrapper.style.animationDelay = `${(i * 0.05).toFixed(2)}s`;
+                
+                const title = document.createElement('div');
+                title.className = 'absolute top-3 left-4 text-xs font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded-md';
+                title.innerText = `# ${i + 1}`;
+                wrapper.appendChild(title);
+
+                const canvas = document.createElement('canvas');
+                // 根據 n 動態調整畫布大小
+                const canvasSize = n > 3 ? 260 : 200; 
+                canvas.width = canvasSize;
+                canvas.height = canvasSize;
+                wrapper.appendChild(canvas);
+                grid.appendChild(wrapper);
+
+                canvases.push({ ctx: canvas.getContext('2d'), width: canvasSize });
+            }
+
+            // 依序啟動每棵樹的繪製動畫
+            // 為了視覺效果更好，我們讓樹與樹之間有短暫的起始間隔
+            const drawPromises = [];
+            for (let i = 0; i < trees.length; i++) {
+                const { ctx, width } = canvases[i];
+                const rootX = width / 2;
+                const rootY = 30;
+                // n 越大，初始的分支寬度要越廣
+                const initialDx = n > 3 ? 65 : 45; 
+                const dy = 45;
+
+                // 使用 async IIFE 來創造時間差，並把 Promise 收集起來
+                const p = (async () => {
+                    await sleep(i * 150); 
+                    await drawTree(ctx, trees[i], rootX, rootY, initialDx, dy, null, null);
+                })();
+                drawPromises.push(p);
+            }
+
+            // 等待所有動畫完成
+            await Promise.all(drawPromises);
+
+            // 更新完成狀態
+            loadingIcon.classList.add('hidden');
+            statusText.innerHTML = `✨ Animation complete! (Nodes: <strong>${n}</strong>, Generated <strong>${trees.length}</strong> combinations)`;
+        }
+
+        // 頁面載入時自動執行一次 n=3
+        window.onload = () => {
+            generateAndAnimate();
+        };
+    </script>
+</body>
+</html>
