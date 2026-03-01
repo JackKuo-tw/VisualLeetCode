@@ -1,57 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Binary Search Tree (BST) Animation</title>
+    <title>Visual LeetCode</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
             background-color: #f8fafc;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
         .canvas-container {
             opacity: 0;
             transform: translateY(20px);
             animation: slideUp 0.6s ease-out forwards;
         }
+
         @keyframes slideUp {
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
+
         canvas {
             max-width: 100%;
             height: auto;
         }
     </style>
 </head>
-<body class="p-6 md:p-10 text-slate-800">
-    <div class="max-w-6xl mx-auto">
-        <!-- 頂部控制面板 -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div>
-                <h1 class="text-2xl font-bold text-slate-800 mb-2">🌳 Unique BST Generator</h1>
-                <p class="text-slate-500 text-sm">Enter the number of nodes n. The system will generate all possible structures using Catalan number logic and animate them.</p>
+
+<body class="text-slate-800 p-0">
+    <nav class="border-b border-slate-200 bg-white/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2 group">
+                <div
+                    class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                        <polyline points="9 22 9 12 15 12 15 22" />
+                    </svg>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-slate-900">Visual <span
+                        class="text-blue-600">LeetCode</span></span>
+            </a>
+            <div class="flex gap-6">
+                <a href="https://github.com/JackKuo-tw/VisualLeetCode" target="_blank"
+                    class="text-slate-500 hover:text-slate-900 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+                        <path d="M9 18c-4.51 2-5-3-7-3" />
+                    </svg>
+                </a>
             </div>
-            
+        </div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto p-6 md:p-10">
+        <!-- 頂部控制面板 -->
+        <div
+            class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-800 mb-2">96. Unique Binary Search Trees</h1>
+                <p class="text-slate-500 text-sm">Enter the number of nodes n. The system will generate all possible
+                    structures using Catalan number logic and animate them.</p>
+            </div>
+
             <div class="flex items-center gap-3 bg-slate-50 p-2 rounded-xl border border-slate-200">
                 <label for="n-input" class="font-medium text-slate-700 ml-2">Nodes (n):</label>
-                <input type="number" id="n-input" value="3" min="1" max="5" 
-                       class="w-16 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center font-bold text-lg">
-                <button onclick="generateAndAnimate()" 
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium transition-colors shadow-sm">
+                <input type="number" id="n-input" value="3" min="1" max="5"
+                    class="w-16 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center font-bold text-lg">
+                <button onclick="generateAndAnimate()"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium transition-colors shadow-sm">
                     Start Animation
                 </button>
             </div>
         </div>
 
         <!-- 狀態提示 -->
-        <div id="status-container" class="hidden mb-6 p-4 rounded-xl bg-blue-50 border border-blue-100 text-blue-800 flex items-center gap-3">
-            <svg class="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" id="loading-icon">
+        <div id="status-container"
+            class="hidden mb-6 p-4 rounded-xl bg-blue-50 border border-blue-100 text-blue-800 flex items-center gap-3">
+            <svg class="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24" id="loading-icon">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
             </svg>
             <span id="status-text" class="font-medium">Preparing...</span>
         </div>
@@ -61,6 +100,17 @@
             <!-- 樹的畫布會被動態加入這裡 -->
         </div>
     </div>
+
+    <footer
+        class="max-w-7xl mx-auto px-6 py-12 border-t border-slate-200 mt-12 flex flex-col md:flex-row justify-between items-center gap-6">
+        <p class="text-slate-500 text-sm">
+            &copy; 2026 Visual LeetCode. Created for algorithm enthusiasts.
+        </p>
+        <div class="flex gap-8">
+            <a href="https://github.com/JackKuo-tw/VisualLeetCode" target="_blank"
+                class="text-slate-400 hover:text-slate-600 transition-colors text-sm">GitHub</a>
+        </div>
+    </footer>
 
     <script>
         // --- 1. 定義樹的節點與生成邏輯 (對應 C++ 邏輯) ---
@@ -152,14 +202,14 @@
             statusContainer.classList.remove('hidden');
             loadingIcon.classList.remove('hidden');
             statusText.innerText = `Calculating all possible combinations for n = ${n}...`;
-            
+
             await sleep(100); // 讓瀏覽器有時間渲染提示文字
 
             // 執行演算法生成樹
             const trees = buildTrees(1, n);
-            
+
             statusText.innerText = `Calculation complete! Found ${trees.length} unique binary search trees. Starting animation...`;
-            
+
             // 建立每個樹的 Canvas 畫布
             const canvases = [];
             for (let i = 0; i < trees.length; i++) {
@@ -167,7 +217,7 @@
                 // 加上 CSS 動畫延遲，讓卡片有依序浮現的效果
                 wrapper.className = 'canvas-container bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center p-4 overflow-hidden relative';
                 wrapper.style.animationDelay = `${(i * 0.05).toFixed(2)}s`;
-                
+
                 const title = document.createElement('div');
                 title.className = 'absolute top-3 left-4 text-xs font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded-md';
                 title.innerText = `# ${i + 1}`;
@@ -175,7 +225,7 @@
 
                 const canvas = document.createElement('canvas');
                 // 根據 n 動態調整畫布大小
-                const canvasSize = n > 3 ? 260 : 200; 
+                const canvasSize = n > 3 ? 260 : 200;
                 canvas.width = canvasSize;
                 canvas.height = canvasSize;
                 wrapper.appendChild(canvas);
@@ -192,12 +242,12 @@
                 const rootX = width / 2;
                 const rootY = 30;
                 // n 越大，初始的分支寬度要越廣
-                const initialDx = n > 3 ? 65 : 45; 
+                const initialDx = n > 3 ? 65 : 45;
                 const dy = 45;
 
                 // 使用 async IIFE 來創造時間差，並把 Promise 收集起來
                 const p = (async () => {
-                    await sleep(i * 150); 
+                    await sleep(i * 150);
                     await drawTree(ctx, trees[i], rootX, rootY, initialDx, dy, null, null);
                 })();
                 drawPromises.push(p);
@@ -217,4 +267,5 @@
         };
     </script>
 </body>
+
 </html>

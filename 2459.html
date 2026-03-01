@@ -1,59 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algorithm Visualizer</title>
+    <title>Visual LeetCode</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom transitions equivalent to the React version */
         .block-transition {
             transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                        background-color 0.3s ease,
-                        box-shadow 0.3s ease,
-                        transform 0.3s ease;
+                background-color 0.3s ease,
+                box-shadow 0.3s ease,
+                transform 0.3s ease;
         }
+
         button:disabled {
             opacity: 0.3;
             cursor: not-allowed;
         }
     </style>
 </head>
-<body class="min-h-screen bg-slate-50 p-6 font-sans text-slate-800">
 
-    <div class="max-w-6xl mx-auto space-y-6">
+<body class="min-h-screen bg-slate-50 font-sans text-slate-800">
+    <nav class="border-b border-slate-200 bg-white/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2 group">
+                <div
+                    class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                        <polyline points="9 22 9 12 15 12 15 22" />
+                    </svg>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-slate-900">Visual <span
+                        class="text-blue-600">LeetCode</span></span>
+            </a>
+            <div class="flex gap-6">
+                <a href="https://github.com/JackKuo-tw/VisualLeetCode" target="_blank"
+                    class="text-slate-500 hover:text-slate-900 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+                        <path d="M9 18c-4.51 2-5-3-7-3" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto space-y-6 p-6">
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-            <h1 class="text-2xl font-bold text-slate-900 mb-4">Algorithm Visualizer: 2459. Sort Array by Moving Items to Empty Space</h1>
-            
+            <h1 class="text-2xl font-bold text-slate-900 mb-4">2459. Sort Array by Moving Items to Empty Space</h1>
+
             <div class="flex flex-col sm:flex-row gap-4 items-end">
                 <div class="flex-1 w-full">
                     <label class="block text-sm font-medium text-slate-600 mb-1">
                         Input Array (0 to N-1)
                     </label>
-                    <input 
-                        type="text" 
-                        id="inputStr"
-                        value="3, 1, 0, 2, 4"
+                    <input type="text" id="inputStr" value="3, 1, 0, 2, 4"
                         class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"
-                        placeholder="e.g., 3, 1, 0, 2"
-                    />
+                        placeholder="e.g., 3, 1, 0, 2" />
                 </div>
                 <div class="w-full sm:w-48">
                     <label class="block text-sm font-medium text-slate-600 mb-1">
                         Target for Zero
                     </label>
-                    <select 
-                        id="zeroPos"
-                        class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
-                    >
+                    <select id="zeroPos"
+                        class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white">
                         <option value="0">Index 0 (Start)</option>
                         <option value="1">Index N-1 (End)</option>
                     </select>
                 </div>
-                <button 
-                    id="generateBtn"
-                    class="w-full sm:w-auto px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
-                >
+                <button id="generateBtn"
+                    class="w-full sm:w-auto px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
                     Generate
                 </button>
             </div>
@@ -61,29 +83,47 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            
+
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col">
                 <h2 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
                     Array Visualization
-                    <svg id="doneIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500 hidden"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <svg id="doneIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" class="text-green-500 hidden">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
                 </h2>
-                
-                <div class="relative h-32 w-full flex items-center justify-center overflow-x-auto bg-slate-50 rounded-xl border border-slate-100 mb-6 px-4">
+
+                <div
+                    class="relative h-32 w-full flex items-center justify-center overflow-x-auto bg-slate-50 rounded-xl border border-slate-100 mb-6 px-4">
                     <div id="vizContainer" class="relative flex h-14">
-                        </div>
+                    </div>
                 </div>
 
-                <div id="descriptionBox" class="bg-blue-50 text-blue-900 p-4 rounded-xl text-sm leading-relaxed min-h-[5rem] flex items-center mb-6 border border-blue-100">
-                    </div>
+                <div id="descriptionBox"
+                    class="bg-blue-50 text-blue-900 p-4 rounded-xl text-sm leading-relaxed min-h-[5rem] flex items-center mb-6 border border-blue-100">
+                </div>
 
                 <div class="mt-auto flex items-center justify-center gap-4 pt-4 border-t border-slate-100">
-                    <button id="prevBtn" class="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5"></line></svg>
+                    <button id="prevBtn"
+                        class="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="19 20 9 12 19 4 19 20"></polygon>
+                            <line x1="5" y1="19" x2="5" y2="5"></line>
+                        </svg>
                     </button>
-                    <button id="playBtn" class="p-4 bg-blue-600 text-white hover:bg-blue-700 rounded-full shadow-md transition-all active:scale-95">
-                        </button>
-                    <button id="nextBtn" class="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
+                    <button id="playBtn"
+                        class="p-4 bg-blue-600 text-white hover:bg-blue-700 rounded-full shadow-md transition-all active:scale-95">
+                    </button>
+                    <button id="nextBtn"
+                        class="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="5 4 15 12 5 20 5 4"></polygon>
+                            <line x1="19" y1="5" x2="19" y2="19"></line>
+                        </svg>
                     </button>
                 </div>
                 <div id="stepIndicator" class="text-center mt-3 text-xs text-slate-400 font-medium tracking-wide">
@@ -92,297 +132,327 @@
             </div>
 
             <div class="space-y-6 flex flex-col">
-                
+
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                     <h2 class="text-lg font-bold text-slate-900 mb-3">Algorithm Explained</h2>
                     <div class="text-sm text-slate-600 space-y-3 leading-relaxed">
                         <p>
-                            This algorithm sorts a permutation of numbers from <code class="bg-slate-100 px-1 py-0.5 rounded">0</code> to <code class="bg-slate-100 px-1 py-0.5 rounded">N-1</code> with a constraint: 
+                            This algorithm sorts a permutation of numbers from <code
+                                class="bg-slate-100 px-1 py-0.5 rounded">0</code> to <code
+                                class="bg-slate-100 px-1 py-0.5 rounded">N-1</code> with a constraint:
                             <strong> You can only swap elements with the number 0.</strong>
                         </p>
                         <p>
-                            Think of <code class="bg-slate-100 px-1 py-0.5 rounded text-rose-500 font-bold">0</code> as an empty seat or a "vehicle". To put a number into its correct position, 
-                            we swap it with the vehicle. The array <code class="bg-slate-100 px-1 py-0.5 rounded text-blue-600">pos</code> acts as an inverse map: 
-                            <code class="bg-slate-100 px-1 py-0.5 rounded">pos[x]</code> tells us the current index of the number <code class="bg-slate-100 px-1 py-0.5 rounded">x</code>.
+                            Think of <code class="bg-slate-100 px-1 py-0.5 rounded text-rose-500 font-bold">0</code> as
+                            an empty seat or a "vehicle". To put a number into its correct position,
+                            we swap it with the vehicle. The array <code
+                                class="bg-slate-100 px-1 py-0.5 rounded text-blue-600">pos</code> acts as an inverse
+                            map:
+                            <code class="bg-slate-100 px-1 py-0.5 rounded">pos[x]</code> tells us the current index of
+                            the number <code class="bg-slate-100 px-1 py-0.5 rounded">x</code>.
                         </p>
                         <ul class="list-disc pl-5 space-y-1">
-                            <li><strong>Case B (Normal operation):</strong> If <code class="bg-slate-100 px-1 py-0.5 rounded">0</code> is at index <code class="bg-slate-100 px-1 py-0.5 rounded">k</code>, the number that actually belongs there is <code class="bg-slate-100 px-1 py-0.5 rounded">k</code> (or <code class="bg-slate-100 px-1 py-0.5 rounded">k+1</code> if targeting the end). We swap <code class="bg-slate-100 px-1 py-0.5 rounded">0</code> with that number, placing it in its permanent home.</li>
-                            <li><strong>Case A (Cycle Break):</strong> If <code class="bg-slate-100 px-1 py-0.5 rounded">0</code> accidentally reaches its final target before the array is fully sorted, it gets "stuck". We swap it with the first available misplaced number to keep the sorting process going.</li>
+                            <li><strong>Case B (Normal operation):</strong> If <code
+                                    class="bg-slate-100 px-1 py-0.5 rounded">0</code> is at index <code
+                                    class="bg-slate-100 px-1 py-0.5 rounded">k</code>, the number that actually belongs
+                                there is <code class="bg-slate-100 px-1 py-0.5 rounded">k</code> (or <code
+                                    class="bg-slate-100 px-1 py-0.5 rounded">k+1</code> if targeting the end). We swap
+                                <code class="bg-slate-100 px-1 py-0.5 rounded">0</code> with that number, placing it in
+                                its permanent home.
+                            </li>
+                            <li><strong>Case A (Cycle Break):</strong> If <code
+                                    class="bg-slate-100 px-1 py-0.5 rounded">0</code> accidentally reaches its final
+                                target before the array is fully sorted, it gets "stuck". We swap it with the first
+                                available misplaced number to keep the sorting process going.</li>
                         </ul>
                     </div>
                 </div>
 
-                <div class="bg-[#1e1e1e] rounded-2xl shadow-sm border border-slate-800 overflow-hidden flex-1 flex flex-col">
+                <div
+                    class="bg-[#1e1e1e] rounded-2xl shadow-sm border border-slate-800 overflow-hidden flex-1 flex flex-col">
                     <div class="bg-[#2d2d2d] px-4 py-2 border-b border-slate-700 flex items-center justify-between">
                         <span class="text-xs font-mono text-slate-300">C++ Implementation</span>
-                        <span class="text-[10px] uppercase tracking-wider text-slate-400 font-bold bg-[#1e1e1e] px-2 py-1 rounded">Live Trace</span>
+                        <span
+                            class="text-[10px] uppercase tracking-wider text-slate-400 font-bold bg-[#1e1e1e] px-2 py-1 rounded">Live
+                            Trace</span>
                     </div>
                     <div id="codeViewer" class="p-4 font-mono text-sm overflow-x-auto">
-                        </div>
+                    </div>
                 </div>
 
             </div>
         </div>
     </div>
 
-<script>
-    // --- Constants & Icons ---
-    const CppCode = [
-        "int cntStep(vector<int> pos, int zeroPos) {",
-        "    int idx = 1, cnt = 0, nextIdx = 0;",
-        "    while(idx < pos.size()) {",
-        "        if (pos[0] == zeroPos * (pos.size() - 1)) {",
-        "            while(idx-zeroPos == pos[idx])",
-        "                if (++idx == pos.size()) return cnt;",
-        "            nextIdx = idx;",
-        "        } else {",
-        "            nextIdx = pos[0] + zeroPos;",
-        "        }",
-        "        swap(pos[0], pos[nextIdx]);",
-        "        cnt += 1;",
-        "    }",
-        "    return cnt;",
-        "}"
-    ];
+    <footer
+        class="max-w-7xl mx-auto px-6 py-12 border-t border-slate-200 mt-12 flex flex-col md:flex-row justify-between items-center gap-6">
+        <p class="text-slate-500 text-sm">
+            &copy; 2026 Visual LeetCode. Created for algorithm enthusiasts.
+        </p>
+        <div class="flex gap-8">
+            <a href="https://github.com/JackKuo-tw/VisualLeetCode" target="_blank"
+                class="text-slate-400 hover:text-slate-600 transition-colors text-sm">GitHub</a>
+        </div>
+    </footer>
 
-    const icons = {
-        play: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>',
-        pause: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>'
-    };
+    <script>
+        // --- Constants & Icons ---
+        const CppCode = [
+            "int cntStep(vector<int> pos, int zeroPos) {",
+            "    int idx = 1, cnt = 0, nextIdx = 0;",
+            "    while(idx < pos.size()) {",
+            "        if (pos[0] == zeroPos * (pos.size() - 1)) {",
+            "            while(idx-zeroPos == pos[idx])",
+            "                if (++idx == pos.size()) return cnt;",
+            "            nextIdx = idx;",
+            "        } else {",
+            "            nextIdx = pos[0] + zeroPos;",
+            "        }",
+            "        swap(pos[0], pos[nextIdx]);",
+            "        cnt += 1;",
+            "    }",
+            "    return cnt;",
+            "}"
+        ];
 
-    // --- State Variables ---
-    let steps = [];
-    let currentStep = 0;
-    let isPlaying = false;
-    let playIntervalRef = null;
-    let blockElements = {}; // Mapping to track DOM elements for animation
-
-    // --- Algorithm Logic ---
-    function parseInput(str) {
-        const arr = str.split(',').map(s => parseInt(s.trim(), 10));
-        if (arr.some(isNaN)) throw new Error("Please enter valid comma-separated numbers.");
-        
-        const n = arr.length;
-        const seen = new Set();
-        for (let num of arr) {
-            if (num < 0 || num >= n) throw new Error(`Numbers must be exactly from 0 to ${n - 1}.`);
-            if (seen.has(num)) throw new Error("Numbers must be unique (a permutation).");
-            seen.add(num);
-        }
-        return arr;
-    }
-
-    function generateSteps(initialNums, zeroTarget) {
-        const n = initialNums.length;
-        const pos = new Array(n).fill(0);
-        for (let i = 0; i < n; i++) pos[initialNums[i]] = i;
-
-        const history = [];
-        const recordState = (description, swapIndices, activeLines) => {
-            const currentNums = new Array(n).fill(0);
-            for (let i = 0; i < n; i++) currentNums[pos[i]] = i;
-            history.push({
-                nums: [...currentNums],
-                pos: [...pos],
-                description,
-                swapIndices,
-                activeLines
-            });
+        const icons = {
+            play: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>',
+            pause: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>'
         };
 
-        recordState("Initial state. The array 'pos' tracks the current index of each number.", null, [0, 1]);
+        // --- State Variables ---
+        let steps = [];
+        let currentStep = 0;
+        let isPlaying = false;
+        let playIntervalRef = null;
+        let blockElements = {}; // Mapping to track DOM elements for animation
 
-        let idx = 1;
-        let cnt = 0;
-        let nextIdx = 0;
+        // --- Algorithm Logic ---
+        function parseInput(str) {
+            const arr = str.split(',').map(s => parseInt(s.trim(), 10));
+            if (arr.some(isNaN)) throw new Error("Please enter valid comma-separated numbers.");
 
-        while (idx < n) {
-            let targetPosOfZero = zeroTarget * (n - 1);
-            let isZeroAtTarget = pos[0] === targetPosOfZero;
-
-            if (isZeroAtTarget) {
-                while (idx < n && (idx - zeroTarget) === pos[idx]) {
-                    idx++;
-                }
-                if (idx === n) break;
-                nextIdx = idx;
-                
-                let p0 = pos[0];
-                let pNext = pos[nextIdx];
-                let temp = pos[0];
-                pos[0] = pos[nextIdx];
-                pos[nextIdx] = temp;
-                
-                cnt++;
-                recordState(
-                    `Case A: Number 0 is stuck at its target position, but array is not fully sorted. We find the first misplaced number (${nextIdx}) and swap 0 with it to break the cycle.`,
-                    [p0, pNext],
-                    [3, 4, 6, 10]
-                );
-            } else {
-                nextIdx = pos[0] + zeroTarget;
-                
-                let p0 = pos[0];
-                let pNext = pos[nextIdx];
-                let temp = pos[0];
-                pos[0] = pos[nextIdx];
-                pos[nextIdx] = temp;
-                
-                cnt++;
-                recordState(
-                    `Case B: Number 0 is free (currently at index ${p0}). The number that belongs at index ${p0} is ${nextIdx}. We swap 0 with ${nextIdx} to put ${nextIdx} in its correct permanent place.`,
-                    [p0, pNext],
-                    [3, 8, 10]
-                );
+            const n = arr.length;
+            const seen = new Set();
+            for (let num of arr) {
+                if (num < 0 || num >= n) throw new Error(`Numbers must be exactly from 0 to ${n - 1}.`);
+                if (seen.has(num)) throw new Error("Numbers must be unique (a permutation).");
+                seen.add(num);
             }
+            return arr;
         }
-        
-        recordState(`Array is successfully sorted in ${cnt} steps!`, null, [5, 13]);
-        return history;
-    }
 
-    // --- DOM Manipulation ---
-    function initializeBlocks(nums) {
-        const vizContainer = document.getElementById('vizContainer');
-        vizContainer.innerHTML = '';
-        vizContainer.style.width = `${nums.length * 72}px`;
-        blockElements = {};
+        function generateSteps(initialNums, zeroTarget) {
+            const n = initialNums.length;
+            const pos = new Array(n).fill(0);
+            for (let i = 0; i < n; i++) pos[initialNums[i]] = i;
 
-        nums.forEach((num, i) => {
-            const block = document.createElement('div');
-            block.innerText = num;
-            vizContainer.appendChild(block);
-            blockElements[num] = block;
-        });
-    }
+            const history = [];
+            const recordState = (description, swapIndices, activeLines) => {
+                const currentNums = new Array(n).fill(0);
+                for (let i = 0; i < n; i++) currentNums[pos[i]] = i;
+                history.push({
+                    nums: [...currentNums],
+                    pos: [...pos],
+                    description,
+                    swapIndices,
+                    activeLines
+                });
+            };
 
-    function renderCode() {
-        const data = steps[currentStep] || { activeLines: [] };
-        const codeViewer = document.getElementById('codeViewer');
-        codeViewer.innerHTML = '';
+            recordState("Initial state. The array 'pos' tracks the current index of each number.", null, [0, 1]);
 
-        CppCode.forEach((line, idx) => {
-            const isActive = data.activeLines && data.activeLines.includes(idx);
-            const lineDiv = document.createElement('div');
-            
-            lineDiv.className = `px-2 py-0.5 rounded flex items-center gap-3 transition-colors duration-200 ${
-                isActive ? 'bg-blue-500/20 border-l-2 border-blue-400' : 'border-l-2 border-transparent hover:bg-white/5'
-            }`;
-            
-            lineDiv.innerHTML = `
+            let idx = 1;
+            let cnt = 0;
+            let nextIdx = 0;
+
+            while (idx < n) {
+                let targetPosOfZero = zeroTarget * (n - 1);
+                let isZeroAtTarget = pos[0] === targetPosOfZero;
+
+                if (isZeroAtTarget) {
+                    while (idx < n && (idx - zeroTarget) === pos[idx]) {
+                        idx++;
+                    }
+                    if (idx === n) break;
+                    nextIdx = idx;
+
+                    let p0 = pos[0];
+                    let pNext = pos[nextIdx];
+                    let temp = pos[0];
+                    pos[0] = pos[nextIdx];
+                    pos[nextIdx] = temp;
+
+                    cnt++;
+                    recordState(
+                        `Case A: Number 0 is stuck at its target position, but array is not fully sorted. We find the first misplaced number (${nextIdx}) and swap 0 with it to break the cycle.`,
+                        [p0, pNext],
+                        [3, 4, 6, 10]
+                    );
+                } else {
+                    nextIdx = pos[0] + zeroTarget;
+
+                    let p0 = pos[0];
+                    let pNext = pos[nextIdx];
+                    let temp = pos[0];
+                    pos[0] = pos[nextIdx];
+                    pos[nextIdx] = temp;
+
+                    cnt++;
+                    recordState(
+                        `Case B: Number 0 is free (currently at index ${p0}). The number that belongs at index ${p0} is ${nextIdx}. We swap 0 with ${nextIdx} to put ${nextIdx} in its correct permanent place.`,
+                        [p0, pNext],
+                        [3, 8, 10]
+                    );
+                }
+            }
+
+            recordState(`Array is successfully sorted in ${cnt} steps!`, null, [5, 13]);
+            return history;
+        }
+
+        // --- DOM Manipulation ---
+        function initializeBlocks(nums) {
+            const vizContainer = document.getElementById('vizContainer');
+            vizContainer.innerHTML = '';
+            vizContainer.style.width = `${nums.length * 72}px`;
+            blockElements = {};
+
+            nums.forEach((num, i) => {
+                const block = document.createElement('div');
+                block.innerText = num;
+                vizContainer.appendChild(block);
+                blockElements[num] = block;
+            });
+        }
+
+        function renderCode() {
+            const data = steps[currentStep] || { activeLines: [] };
+            const codeViewer = document.getElementById('codeViewer');
+            codeViewer.innerHTML = '';
+
+            CppCode.forEach((line, idx) => {
+                const isActive = data.activeLines && data.activeLines.includes(idx);
+                const lineDiv = document.createElement('div');
+
+                lineDiv.className = `px-2 py-0.5 rounded flex items-center gap-3 transition-colors duration-200 ${isActive ? 'bg-blue-500/20 border-l-2 border-blue-400' : 'border-l-2 border-transparent hover:bg-white/5'
+                    }`;
+
+                lineDiv.innerHTML = `
                 <span class="text-xs w-4 text-right select-none ${isActive ? 'text-blue-400' : 'text-slate-500'}">${idx + 1}</span>
                 <span class="${isActive ? 'text-blue-100' : 'text-slate-300'} whitespace-pre">${line}</span>
             `;
-            codeViewer.appendChild(lineDiv);
-        });
-    }
-
-    function renderUI() {
-        if (!steps.length) return;
-        const data = steps[currentStep];
-
-        // Animate blocks
-        data.nums.forEach((num, i) => {
-            const block = blockElements[num];
-            const isSwapping = data.swapIndices && data.swapIndices.includes(i);
-            const isZero = num === 0;
-
-            block.style.transform = `translateX(${i * 72}px)`;
-            
-            const baseClasses = "absolute w-14 h-14 flex items-center justify-center text-xl font-bold rounded-xl shadow-sm block-transition";
-            const colorClasses = isZero ? 'bg-rose-500 text-white z-10' : 'bg-blue-500 text-white';
-            const swapClasses = isSwapping ? 'ring-4 ring-amber-400 ring-offset-2 scale-110 z-20' : 'scale-100';
-            
-            block.className = `${baseClasses} ${colorClasses} ${swapClasses}`;
-        });
-
-        // Update Text
-        document.getElementById('descriptionBox').innerText = data.description;
-        document.getElementById('stepIndicator').innerText = `STEP ${currentStep + 1} OF ${steps.length}`;
-
-        // Controls State
-        document.getElementById('prevBtn').disabled = currentStep === 0;
-        document.getElementById('nextBtn').disabled = currentStep === steps.length - 1;
-        document.getElementById('playBtn').innerHTML = isPlaying ? icons.pause : icons.play;
-        
-        const isDone = currentStep === steps.length - 1;
-        document.getElementById('doneIcon').classList.toggle('hidden', !isDone);
-
-        renderCode();
-    }
-
-    // --- Action Handlers ---
-    function handleGenerate() {
-        try {
-            const errorMsg = document.getElementById('errorMsg');
-            errorMsg.classList.add('hidden');
-            errorMsg.innerText = "";
-            
-            isPlaying = false;
-            stopPlayback();
-
-            const inputStr = document.getElementById('inputStr').value;
-            const zeroPos = parseInt(document.getElementById('zeroPos').value);
-            
-            const arr = parseInput(inputStr);
-            steps = generateSteps(arr, zeroPos);
-            currentStep = 0;
-            
-            initializeBlocks(steps[0].nums);
-            renderUI();
-        } catch (err) {
-            const errorMsg = document.getElementById('errorMsg');
-            errorMsg.innerText = err.message;
-            errorMsg.classList.remove('hidden');
+                codeViewer.appendChild(lineDiv);
+            });
         }
-    }
 
-    function startPlayback() {
-        if (playIntervalRef) clearInterval(playIntervalRef);
-        playIntervalRef = setInterval(() => {
-            if (currentStep < steps.length - 1) {
-                currentStep++;
-                renderUI();
-            } else {
+        function renderUI() {
+            if (!steps.length) return;
+            const data = steps[currentStep];
+
+            // Animate blocks
+            data.nums.forEach((num, i) => {
+                const block = blockElements[num];
+                const isSwapping = data.swapIndices && data.swapIndices.includes(i);
+                const isZero = num === 0;
+
+                block.style.transform = `translateX(${i * 72}px)`;
+
+                const baseClasses = "absolute w-14 h-14 flex items-center justify-center text-xl font-bold rounded-xl shadow-sm block-transition";
+                const colorClasses = isZero ? 'bg-rose-500 text-white z-10' : 'bg-blue-500 text-white';
+                const swapClasses = isSwapping ? 'ring-4 ring-amber-400 ring-offset-2 scale-110 z-20' : 'scale-100';
+
+                block.className = `${baseClasses} ${colorClasses} ${swapClasses}`;
+            });
+
+            // Update Text
+            document.getElementById('descriptionBox').innerText = data.description;
+            document.getElementById('stepIndicator').innerText = `STEP ${currentStep + 1} OF ${steps.length}`;
+
+            // Controls State
+            document.getElementById('prevBtn').disabled = currentStep === 0;
+            document.getElementById('nextBtn').disabled = currentStep === steps.length - 1;
+            document.getElementById('playBtn').innerHTML = isPlaying ? icons.pause : icons.play;
+
+            const isDone = currentStep === steps.length - 1;
+            document.getElementById('doneIcon').classList.toggle('hidden', !isDone);
+
+            renderCode();
+        }
+
+        // --- Action Handlers ---
+        function handleGenerate() {
+            try {
+                const errorMsg = document.getElementById('errorMsg');
+                errorMsg.classList.add('hidden');
+                errorMsg.innerText = "";
+
                 isPlaying = false;
                 stopPlayback();
+
+                const inputStr = document.getElementById('inputStr').value;
+                const zeroPos = parseInt(document.getElementById('zeroPos').value);
+
+                const arr = parseInput(inputStr);
+                steps = generateSteps(arr, zeroPos);
+                currentStep = 0;
+
+                initializeBlocks(steps[0].nums);
                 renderUI();
+            } catch (err) {
+                const errorMsg = document.getElementById('errorMsg');
+                errorMsg.innerText = err.message;
+                errorMsg.classList.remove('hidden');
             }
-        }, 1500);
-    }
+        }
 
-    function stopPlayback() {
-        if (playIntervalRef) clearInterval(playIntervalRef);
-    }
+        function startPlayback() {
+            if (playIntervalRef) clearInterval(playIntervalRef);
+            playIntervalRef = setInterval(() => {
+                if (currentStep < steps.length - 1) {
+                    currentStep++;
+                    renderUI();
+                } else {
+                    isPlaying = false;
+                    stopPlayback();
+                    renderUI();
+                }
+            }, 1500);
+        }
 
-    // --- Event Listeners ---
-    document.getElementById('generateBtn').addEventListener('click', handleGenerate);
-    document.getElementById('zeroPos').addEventListener('change', handleGenerate);
+        function stopPlayback() {
+            if (playIntervalRef) clearInterval(playIntervalRef);
+        }
 
-    document.getElementById('playBtn').addEventListener('click', () => {
-        if (currentStep === steps.length - 1) currentStep = 0;
-        isPlaying = !isPlaying;
-        if (isPlaying) startPlayback();
-        else stopPlayback();
-        renderUI();
-    });
+        // --- Event Listeners ---
+        document.getElementById('generateBtn').addEventListener('click', handleGenerate);
+        document.getElementById('zeroPos').addEventListener('change', handleGenerate);
 
-    document.getElementById('prevBtn').addEventListener('click', () => {
-        isPlaying = false;
-        stopPlayback();
-        currentStep = 0;
-        renderUI();
-    });
+        document.getElementById('playBtn').addEventListener('click', () => {
+            if (currentStep === steps.length - 1) currentStep = 0;
+            isPlaying = !isPlaying;
+            if (isPlaying) startPlayback();
+            else stopPlayback();
+            renderUI();
+        });
 
-    document.getElementById('nextBtn').addEventListener('click', () => {
-        isPlaying = false;
-        stopPlayback();
-        if (currentStep < steps.length - 1) currentStep++;
-        renderUI();
-    });
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            isPlaying = false;
+            stopPlayback();
+            currentStep = 0;
+            renderUI();
+        });
 
-    // Initialize on load
-    window.addEventListener('DOMContentLoaded', handleGenerate);
-</script>
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            isPlaying = false;
+            stopPlayback();
+            if (currentStep < steps.length - 1) currentStep++;
+            renderUI();
+        });
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', handleGenerate);
+    </script>
 </body>
+
 </html>
