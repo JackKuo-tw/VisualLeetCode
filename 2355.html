@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual LeetCode - Maximum Books</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- highlight.js from cdnjs -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/cpp.min.js"></script>
+    <style>
+        body {
+            background-color: #f8fafc;
+        }
+
+        /* Custom transitions for smoother pure JS animations */
+        .array-item {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .stack-item {
+            animation: slideIn 0.3s ease-out forwards;
+        }
+
+        .popped-item {
+            animation: fadeOutRight 0.5s ease-out forwards;
+            opacity: 0.5;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOutRight {
+            from {
+                transform: scale(1) translateX(0);
+            }
+
+            to {
+                transform: scale(0.9) translateX(30px);
+                opacity: 0;
+            }
+        }
+
+        /* Code highlighting transitions */
+        .code-line {
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .code-line.active {
+            background-color: rgba(96, 165, 250, 0.2);
+            border-left-color: #60a5fa !important;
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 p-0 font-sans">
+    <nav class="border-b border-slate-200 bg-white/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2 group">
+                <div
+                    class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                        <polyline points="9 22 9 12 15 12 15 22" />
+                    </svg>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-slate-900">Visual <span
+                        class="text-blue-600">LeetCode</span></span>
+            </a>
+            <div class="flex gap-6">
+                <a href="https://github.com/JackKuo-tw/VisualLeetCode" target="_blank"
+                    class="text-slate-500 hover:text-slate-900 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+                        <path d="M9 18c-4.51 2-5-3-7-3" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto p-6 md:p-10 space-y-6">
+
+        <!-- Header & Controls -->
+        <div
+            class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900">2355. Maximum Number of Books You Can Take</h1>
+                <p class="text-sm text-slate-500 mt-1">books = [8, 5, 2, 7, 9]</p>
+            </div>
+            <div class="flex gap-2">
+                <button id="btn-reset" class="p-2 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                    title="Reset">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                        <path d="M3 3v5h5" />
+                    </svg>
+                </button>
+                <button id="btn-prev"
+                    class="p-2 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors disabled:opacity-50 text-slate-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m11 17-5-5 5-5m7 10-5-5 5-5" />
+                    </svg>
+                </button>
+                <button id="btn-play"
+                    class="p-2 w-28 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex justify-center items-center gap-2 shadow-sm font-medium">
+                    <!-- Play Icon -->
+                    <svg id="icon-play" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polygon points="6 3 20 12 6 21 6 3" />
+                    </svg>
+                    <!-- Pause Icon (Hidden by default) -->
+                    <svg id="icon-pause" class="hidden" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="14" y="4" width="4" height="16" rx="1" />
+                        <rect x="6" y="4" width="4" height="16" rx="1" />
+                    </svg>
+                    <span id="play-text">Play</span>
+                </button>
+                <button id="btn-next"
+                    class="p-2 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors disabled:opacity-50 text-slate-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m13 17 5-5-5-5M6 17l5-5-5-5" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Narrative Box -->
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-2xl shadow-sm">
+            <p id="narrative-desc" class="text-lg font-medium text-blue-900 min-h-[3rem] transition-all duration-300">
+                Loading...
+            </p>
+            <div id="narrative-progress" class="text-xs text-blue-400 mt-2 text-right font-mono">
+                Step: 0 / 0
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- Left Column: Arrays (Books and DP) -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Books Array -->
+                <div>
+                    <h3 class="text-sm font-bold text-slate-500 mb-3 uppercase tracking-wider">Books Array (Available
+                        Books)</h3>
+                    <div id="books-container" class="flex gap-3"></div>
+                </div>
+
+                <!-- DP Array -->
+                <div>
+                    <h3 class="text-sm font-bold text-slate-500 mb-3 uppercase tracking-wider">DP Array (Max Books
+                        Collected)</h3>
+                    <div id="dp-container" class="flex gap-3"></div>
+                </div>
+
+                <!-- C++ Code Snippet Area -->
+                <div class="bg-[#1e1e1e] rounded-2xl shadow-lg border border-slate-800 overflow-hidden mt-4">
+                    <div class="bg-[#2d2d2d] px-4 py-2 border-b border-slate-700 flex items-center justify-between">
+                        <span class="text-xs font-mono text-slate-300">Solution.cpp</span>
+                        <span
+                            class="text-[10px] uppercase tracking-wider text-slate-400 font-bold bg-[#1e1e1e] px-2 py-1 rounded">Live
+                            Trace</span>
+                    </div>
+                    <div class="p-0 font-mono text-sm overflow-x-auto" id="code-container">
+                        <!-- Code lines will be injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Stack -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col h-[500px] lg:h-auto">
+                <h3 class="text-sm font-bold text-slate-500 mb-6 text-center uppercase tracking-wider">Monotonic Stack
+                    (Indices)</h3>
+                <div id="stack-container"
+                    class="flex-1 flex flex-col-reverse justify-start items-center gap-3 overflow-y-auto overflow-x-hidden pb-4 border-b-4 border-slate-800 rounded-b-lg relative p-2 bg-slate-50">
+                    <!-- Stack items injected here -->
+                </div>
+                <p class="text-xs text-center text-slate-400 mt-3 font-medium">(Bottom &darr; Top &uarr;)</p>
+            </div>
+
+        </div>
+    </div>
+
+    <footer
+        class="max-w-7xl mx-auto px-6 py-12 border-t border-slate-200 mt-12 flex flex-col md:flex-row justify-between items-center gap-6">
+        <p class="text-slate-500 text-sm">
+            &copy; 2026 Visual LeetCode. Created for algorithm enthusiasts.
+        </p>
+        <div class="flex gap-8">
+            <a href="https://github.com/JackKuo-tw/VisualLeetCode" target="_blank"
+                class="text-slate-400 hover:text-slate-600 transition-colors text-sm font-medium">GitHub</a>
+        </div>
+    </footer>
+
+    <script>
+        // --- Algorithm & Step Generation ---
+        const books = [8, 5, 2, 7, 9];
+
+        function generateSteps(books) {
+            let steps = [];
+            let n = books.length;
+            let stack = [];
+            let dp = new Array(n).fill(0);
+
+            const calcSum = (l, r) => {
+                let cnt = Math.min(books[r], r - l + 1);
+                return (2 * books[r] - (cnt - 1)) * cnt / 2;
+            };
+
+            steps.push({ i: -1, desc: "Initialization: Create empty DP array and Monotonic Stack.", stack: [...stack], dp: [...dp], lines: [0] });
+
+            for (let i = 0; i < n; i++) {
+                steps.push({ i, desc: `[Day ${i}] Current books[${i}] = ${books[i]}. Ready to find a valid support point...`, stack: [...stack], dp: [...dp], highlight: [i], lines: [1] });
+
+                while (stack.length > 0) {
+                    let top = stack[stack.length - 1];
+                    let valI = books[i] - i;
+                    let valTop = books[top] - top;
+
+                    steps.push({
+                        i,
+                        desc: `Checking Stack Top (idx ${top}): books[${top}] - ${top} (${valTop}) vs books[${i}] - ${i} (${valI}).`,
+                        stack: [...stack], dp: [...dp], highlight: [i, top], checkingStack: true, lines: [2]
+                    });
+
+                    if (valTop >= valI) {
+                        stack.pop();
+                        steps.push({
+                            i,
+                            desc: `Since ${valTop} >= ${valI}, Day ${top} is a bottleneck and cannot support the sequence. Pop it!`,
+                            stack: [...stack], dp: [...dp], highlight: [i], popped: top, lines: [3]
+                        });
+                    } else {
+                        steps.push({
+                            i,
+                            desc: `Since ${valTop} < ${valI}, Day ${top} is a valid support point! Stop popping.`,
+                            stack: [...stack], dp: [...dp], highlight: [i, top], lines: [4]
+                        });
+                        break;
+                    }
+                }
+
+                steps.push({ i, desc: `Checking if stack is empty...`, stack: [...stack], dp: [...dp], highlight: [i], lines: [5] });
+
+                if (stack.length === 0) {
+                    dp[i] = calcSum(0, i);
+                    steps.push({
+                        i,
+                        desc: `Stack is empty! No bottlenecks found. Calculate max sum from Day 0 to ${i}. DP[${i}] = ${dp[i]}.`,
+                        stack: [...stack], dp: [...dp], highlight: [i], calculated: true, lines: [6]
+                    });
+                } else {
+                    let j = stack[stack.length - 1];
+                    let sum = calcSum(j + 1, i);
+                    dp[i] = dp[j] + sum;
+                    steps.push({
+                        i,
+                        desc: `Stack not empty. Valid support at Day ${j}. DP[${i}] = DP[${j}] (${dp[j]}) + sequence sum (${sum}) = ${dp[i]}.`,
+                        stack: [...stack], dp: [...dp], highlight: [i, j], calculated: true, lines: [8, 9]
+                    });
+                }
+
+                stack.push(i);
+                steps.push({
+                    i,
+                    desc: `Push current Day ${i} onto the stack as a potential future support point.`,
+                    stack: [...stack], dp: [...dp], highlight: [i], lines: [11]
+                });
+            }
+
+            steps.push({
+                i: n,
+                desc: `Finished! The maximum number of books we can take is ${Math.max(...dp)}.`,
+                stack: [...stack], dp: [...dp], done: true, lines: [12]
+            });
+
+            return steps;
+        }
+
+        const steps = generateSteps(books);
+
+        // --- State Variables ---
+        let currentStep = 0;
+        let isPlaying = false;
+        let intervalId = null;
+
+        // --- Code Snippet Setup ---
+        const codeLines = [
+            "vector<long long> dp(n);\nstack<int> s;",
+            "for (int i = 0; i < n; i++) {",
+            "    while (!s.empty() && books[s.top()] - s.top() >= books[i] - i) {",
+            "        s.pop();",
+            "    }",
+            "    if (s.empty()) {",
+            "        dp[i] = calcSum(0, i);",
+            "    } else {",
+            "        int j = s.top();",
+            "        dp[i] = dp[j] + calcSum(j + 1, i);",
+            "    }",
+            "    s.push(i);",
+            "}"
+        ];
+
+        function initCodeBlock() {
+            const container = document.getElementById('code-container');
+            codeLines.forEach((lineText, idx) => {
+                const div = document.createElement('div');
+                div.id = `code-line-${idx}`;
+                div.className = 'code-line pl-3 py-0.5 border-l-4 border-transparent whitespace-pre font-mono text-[13px] sm:text-sm flex items-center gap-3 transition-colors duration-200';
+
+                // We use highlight.js for the code content
+                const codeSpan = document.createElement('span');
+                codeSpan.className = 'language-cpp text-slate-300 whitespace-pre';
+                codeSpan.textContent = lineText;
+
+                const lineNumber = document.createElement('span');
+                lineNumber.className = 'text-xs w-4 text-right select-none text-slate-500';
+                lineNumber.textContent = idx + 1;
+
+                div.appendChild(lineNumber);
+                div.appendChild(codeSpan);
+                container.appendChild(div);
+
+                // Trigger highlight.js on the span
+                hljs.highlightElement(codeSpan);
+            });
+        }
+
+        // --- DOM Elements ---
+        const els = {
+            desc: document.getElementById('narrative-desc'),
+            progress: document.getElementById('narrative-progress'),
+            books: document.getElementById('books-container'),
+            dp: document.getElementById('dp-container'),
+            stack: document.getElementById('stack-container'),
+            btnPrev: document.getElementById('btn-prev'),
+            btnNext: document.getElementById('btn-next'),
+            btnPlay: document.getElementById('btn-play'),
+            btnReset: document.getElementById('btn-reset'),
+            iconPlay: document.getElementById('icon-play'),
+            iconPause: document.getElementById('icon-pause'),
+            playText: document.getElementById('play-text')
+        };
+
+        // --- Render Logic ---
+        function render() {
+            const step = steps[currentStep];
+
+            // 1. Narrative
+            els.desc.textContent = step.desc;
+            els.progress.textContent = `Step: ${currentStep} / ${steps.length - 1}`;
+
+            // 2. Code Highlight
+            for (let i = 0; i < codeLines.length; i++) {
+                const lineEl = document.getElementById(`code-line-${i}`);
+                if (step.lines && step.lines.includes(i)) {
+                    lineEl.classList.add('active');
+                } else {
+                    lineEl.classList.remove('active');
+                }
+            }
+
+            // 3. Books Array
+            els.books.innerHTML = '';
+            books.forEach((val, idx) => {
+                const isCurrent = step.i === idx;
+                const isHighlighted = step.highlight && step.highlight.includes(idx);
+                const isChecking = step.checkingStack && step.highlight && idx === step.highlight[1];
+
+                let bgClass = "bg-white border-slate-300";
+                if (isCurrent) bgClass = "bg-blue-100 border-blue-500 shadow-md transform scale-105";
+                else if (isChecking) bgClass = "bg-orange-100 border-orange-400 border-dashed border-2";
+                else if (isHighlighted) bgClass = "bg-yellow-100 border-yellow-400";
+
+                const div = document.createElement('div');
+                div.className = `array-item flex-1 h-20 border-2 rounded-xl flex flex-col items-center justify-center ${bgClass}`;
+                div.innerHTML = `<span class="text-2xl font-bold">${val}</span><span class="text-xs text-slate-400 mt-1 font-medium">idx: ${idx}</span>`;
+                els.books.appendChild(div);
+            });
+
+            // 4. DP Array
+            els.dp.innerHTML = '';
+            books.forEach((_, idx) => {
+                const val = step.dp[idx];
+                const isCalculatedNow = step.calculated && step.i === idx;
+                const hasValue = val > 0;
+
+                let bgClass = "bg-slate-100 border-slate-200 text-transparent";
+                if (isCalculatedNow) bgClass = "bg-green-100 border-green-500 shadow-lg scale-110 text-slate-900";
+                else if (hasValue) bgClass = "bg-slate-800 border-slate-900 text-white";
+
+                const div = document.createElement('div');
+                div.className = `array-item flex-1 h-16 border-2 rounded-xl flex items-center justify-center ${bgClass}`;
+                div.innerHTML = `<span class="text-xl font-bold">${val > 0 ? val : ''}</span>`;
+                els.dp.appendChild(div);
+            });
+
+            // 5. Stack
+            els.stack.innerHTML = '';
+            if (step.stack.length === 0 && (step.popped === undefined)) {
+                const span = document.createElement('span');
+                span.className = "text-slate-300 text-sm mt-auto mb-4 font-medium uppercase tracking-tight";
+                span.textContent = "Stack is Empty";
+                els.stack.appendChild(span);
+            } else {
+                // Render popped element if exists
+                if (step.popped !== undefined) {
+                    const div = document.createElement('div');
+                    div.className = "popped-item w-3/4 py-3 bg-red-100 border-2 border-red-400 rounded-lg flex flex-col items-center justify-center shadow-sm mb-2";
+                    div.innerHTML = `<span class="font-bold text-red-900 line-through">Index ${step.popped}</span><span class="text-xs text-red-600 font-medium">Popped</span>`;
+                    els.stack.appendChild(div);
+                }
+
+                // Render current stack items (bottom-up visual, but DOM is column-reverse)
+                step.stack.forEach(stackIdx => {
+                    const div = document.createElement('div');
+                    div.className = "stack-item w-3/4 py-3 bg-indigo-100 border-2 border-indigo-400 rounded-lg flex flex-col items-center justify-center shadow-sm w-full max-w-[80%]";
+                    div.innerHTML = `<span class="font-bold text-indigo-900">Index ${stackIdx}</span><span class="text-xs text-indigo-600 font-medium">(val: ${books[stackIdx]})</span>`;
+                    els.stack.appendChild(div);
+                });
+            }
+
+            // 6. Buttons State
+            els.btnPrev.disabled = currentStep === 0;
+            els.btnNext.disabled = currentStep === steps.length - 1;
+        }
+
+        // --- Controls Logic ---
+        function updatePlayState() {
+            if (isPlaying) {
+                els.iconPlay.classList.add('hidden');
+                els.iconPause.classList.remove('hidden');
+                els.playText.textContent = 'Pause';
+
+                intervalId = setInterval(() => {
+                    if (currentStep < steps.length - 1) {
+                        currentStep++;
+                        render();
+                    } else {
+                        isPlaying = false;
+                        updatePlayState();
+                    }
+                }, 2000); // 2 seconds per step for easier reading of code
+            } else {
+                els.iconPlay.classList.remove('hidden');
+                els.iconPause.classList.add('hidden');
+                els.playText.textContent = 'Play';
+                clearInterval(intervalId);
+            }
+        }
+
+        els.btnPlay.addEventListener('click', () => {
+            if (currentStep === steps.length - 1) currentStep = 0; // auto restart
+            isPlaying = !isPlaying;
+            updatePlayState();
+        });
+
+        els.btnNext.addEventListener('click', () => {
+            if (currentStep < steps.length - 1) { currentStep++; render(); }
+            if (isPlaying) { isPlaying = false; updatePlayState(); }
+        });
+
+        els.btnPrev.addEventListener('click', () => {
+            if (currentStep > 0) { currentStep--; render(); }
+            if (isPlaying) { isPlaying = false; updatePlayState(); }
+        });
+
+        els.btnReset.addEventListener('click', () => {
+            currentStep = 0;
+            isPlaying = false;
+            updatePlayState();
+            render();
+        });
+
+        // --- Initialization ---
+        window.onload = () => {
+            initCodeBlock();
+            render();
+        };
+
+    </script>
+</body>
+
+</html>
