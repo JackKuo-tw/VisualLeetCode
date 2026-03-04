@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual LeetCode - 2297. Jump Game VIII</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/cpp.min.js"></script>
+    <style>
+        body {
+            background-color: #f8fafc;
+        }
+
+        .bar-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 200px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .bar-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            height: 100%;
+            z-index: 10;
+        }
+
+        .bar {
+            width: 40px;
+            border-radius: 4px 4px 0 0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 5px;
+            font-weight: bold;
+            color: #334155;
+        }
+
+        .bar.active {
+            box-shadow: 0 0 15px 5px rgba(59, 130, 246, 0.3);
+            border: 2px solid #3b82f6;
+        }
+
+        .bar-info {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .code-container {
+            background: #1e1e1e;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            overflow-y: auto;
+            max-height: 80vh;
+            border: 1px solid #333;
+        }
+
+        .code-line {
+            transition: all 0.2s;
+        }
+
+        .code-line.active {
+            background-color: rgba(96, 165, 250, 0.2);
+            border-left: 4px solid #60a5fa !important;
+        }
+
+        .stack-container {
+            display: flex;
+            gap: 5px;
+            min-height: 40px;
+            padding: 5px;
+            background: #f1f5f9;
+            border-radius: 4px;
+            align-items: center;
+            border: 1px solid #cbd5e1;
+        }
+
+        .stack-item {
+            background: #e2e8f0;
+            color: #334155;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .dp-box {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            transition: all 0.3s;
+            color: #334155;
+        }
+
+        .dp-box.updated {
+            background: #10b981;
+            border-color: #059669;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .dp-box.active {
+            border-color: #3b82f6;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+        }
+
+        #arrowSvg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .arrow-path {
+            fill: none;
+            stroke-width: 2;
+            transition: all 0.3s;
+        }
+
+        .arrow-head {
+            transition: all 0.3s;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            border: none;
+        }
+
+        .btn-prev {
+            background: #64748b;
+            color: white;
+        }
+
+        .btn-prev:hover {
+            background: #475569;
+        }
+
+        .btn-next {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-next:hover {
+            background: #2563eb;
+        }
+
+        .btn-reset {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #dc2626;
+        }
+
+        #narrative {
+            min-height: 80px;
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 p-0 font-sans min-h-screen flex flex-col bg-slate-50">
+
+    <!-- Header (Navigation) -->
+    <nav class="border-b border-slate-200 bg-white/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2 group">
+                <div
+                    class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                        <polyline points="9 22 9 12 15 12 15 22" />
+                    </svg>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-slate-900">Visual <span
+                        class="text-blue-600">LeetCode</span></span>
+            </a>
+            <div class="flex gap-6">
+                <a href="https://github.com/JackKuo-tw/VisualLeetCode" target="_blank"
+                    class="text-slate-500 hover:text-slate-900 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+                        <path d="M9 18c-4.51 2-5-3-7-3" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-[90rem] w-full mx-auto p-6 md:p-10 flex-1 flex flex-col space-y-6">
+        <div class="flex justify-between items-center mb-2">
+            <h1 class="text-2xl font-bold text-slate-900">2297. Jump Game VIII</h1>
+            <div class="flex items-center gap-4">
+                <button id="btnReset" class="btn btn-reset">Reset</button>
+                <button id="btnPrev" class="btn btn-prev">Previous</button>
+                <button id="btnNext" class="btn btn-next">Next</button>
+            </div>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-6 flex-1 overflow-hidden">
+            <!-- Left: Visualization Area -->
+            <div class="flex-1 flex flex-col gap-4 overflow-y-auto">
+
+                <!-- Narrative / Explanation -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="text-lg font-semibold mb-2 text-amber-600">Current Step Explanation</h3>
+                    <div id="narrative" class="text-slate-600 text-lg">Click 'Next' to start the algorithm...</div>
+                </div>
+
+                <!-- Array Visualization -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative">
+                    <h3 class="text-sm text-slate-500 mb-2">Array Nums & Costs</h3>
+                    <div class="bar-container" id="barContainer">
+                        <!-- SVG injected here later -->
+                        <!-- Bars generated by JS -->
+                    </div>
+                </div>
+
+                <!-- Monotonic Stacks Visualization -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-sm text-blue-600 mb-2 font-bold">incst Stack (Find next >= element)</h3>
+                        <p class="text-xs text-slate-500 mb-2">Stores indices, corresponding values are decreasing</p>
+                        <div class="stack-container" id="incstContainer"></div>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-sm text-red-600 mb-2 font-bold">decst Stack (Find next &lt; element)</h3>
+                        <p class="text-xs text-slate-500 mb-2">Stores indices, corresponding values are increasing</p>
+                        <div class="stack-container" id="decstContainer"></div>
+                    </div>
+                </div>
+
+                <!-- DP Array Visualization -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="text-sm text-slate-500 mb-2">DP Array (Min cost to reach index i)</h3>
+                    <div class="flex gap-2 justify-around" id="dpContainer">
+                        <!-- DP boxes generated by JS -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right: Code Area -->
+            <div class="w-full lg:w-[50%] flex flex-col">
+                <div
+                    class="bg-[#1e1e1e] rounded-2xl shadow-sm border border-slate-800 overflow-hidden flex-1 flex flex-col">
+                    <div class="bg-[#2d2d2d] px-4 py-2 border-b border-slate-700 flex items-center justify-between">
+                        <span class="text-xs font-mono text-slate-300">C++ Implementation</span>
+                        <span
+                            class="text-[10px] uppercase tracking-wider text-slate-400 font-bold bg-[#1e1e1e] px-2 py-1 rounded">Live
+                            Trace</span>
+                    </div>
+                    <div id="codeBlock"
+                        class="p-0 font-mono text-sm overflow-x-auto code-container border-none outline-none">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function () {
+            var CppCode = [
+                "long long minCost(vector<int>& nums, vector<int>& costs) {",
+                "    int n = nums.size();",
+                "    stack<int> incst, decst;",
+                "    vector<int> incv(n, -1), decv(n, -1);",
+                "    ",
+                "    // Phase 1: Find jump paths using monotonic stacks",
+                "    for(int i = 0; i < n; ++i) {",
+                "        while(!incst.empty() && nums[incst.top()] <= nums[i]) {",
+                "            incv[incst.top()] = i;",
+                "            incst.pop();",
+                "        }",
+                "        incst.push(i);",
+                "        ",
+                "        while(!decst.empty() && nums[decst.top()] > nums[i]) {",
+                "            decv[decst.top()] = i;",
+                "            decst.pop();",
+                "        }",
+                "        decst.push(i);",
+                "    }",
+                "    ",
+                "    // Phase 2: Calculate min cost using DP",
+                "    vector<long long> dp(n, LONG_LONG_MAX);",
+                "    dp[0] = 0;",
+                "    for(int i = 0; i < n; ++i) {",
+                "        if(incv[i] != -1) {",
+                "            dp[incv[i]] = min(dp[incv[i]], dp[i] + costs[incv[i]]);",
+                "        }",
+                "        if(decv[i] != -1) {",
+                "            dp[decv[i]] = min(dp[decv[i]], dp[i] + costs[decv[i]]);",
+                "        }",
+                "    }",
+                "    return dp[n - 1];",
+                "}"
+            ];
+
+            function initCodeBlock() {
+                var container = document.getElementById('codeBlock');
+                container.innerHTML = '';
+                CppCode.forEach(function (lineText, idx) {
+                    var div = document.createElement('div');
+                    div.id = 'line-' + (idx + 1);
+                    div.className = 'code-line pl-3 py-0.5 border-l-4 border-transparent flex items-center gap-3 transition-colors duration-200 hover:bg-white/5';
+                    var codeSpan = document.createElement('span');
+                    codeSpan.className = 'language-cpp text-slate-300 whitespace-pre font-mono text-sm';
+                    codeSpan.textContent = lineText;
+                    div.innerHTML = '<span class="text-xs w-4 text-right select-none text-slate-500">' + (idx + 1) + '</span>';
+                    div.appendChild(codeSpan);
+                    container.appendChild(div);
+                    hljs.highlightElement(codeSpan);
+                });
+            }
+
+            var nums = [3, 2, 4, 4, 1, 5];
+            var costs = [3, 7, 6, 4, 2, 0];
+            var n = nums.length;
+
+            var actions = [];
+            var currentStep = -1;
+
+            var barContainer = document.getElementById('barContainer');
+            var incstContainer = document.getElementById('incstContainer');
+            var decstContainer = document.getElementById('decstContainer');
+            var dpContainer = document.getElementById('dpContainer');
+            var arrowSvg = document.getElementById('arrowSvg');
+            var narrative = document.getElementById('narrative');
+
+            function initVisuals() {
+                barContainer.innerHTML = '<svg id="arrowSvg"><defs><marker id="arrowhead-inc" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#60a5fa" /></marker><marker id="arrowhead-dec" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#f87171" /></marker><marker id="arrowhead-dp" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#34d399" /></marker></defs></svg>';
+                dpContainer.innerHTML = '';
+                incstContainer.innerHTML = '';
+                decstContainer.innerHTML = '';
+
+                var maxNum = Math.max.apply(null, nums);
+
+                for (var i = 0; i < n; i++) {
+                    var group = document.createElement('div');
+                    group.className = 'bar-group';
+                    group.id = 'bar-group-' + i;
+
+                    var bar = document.createElement('div');
+                    bar.className = 'bar bg-slate-200';
+                    bar.id = 'bar-' + i;
+                    var heightPercent = (nums[i] / maxNum) * 100;
+                    bar.style.height = Math.max(20, heightPercent * 1.2) + 'px';
+                    bar.innerText = nums[i];
+
+                    var info = document.createElement('div');
+                    info.className = 'bar-info text-slate-600';
+                    info.innerHTML = '<span class="text-xs text-slate-400">idx ' + i + '</span><br><span class="text-amber-600">cost ' + costs[i] + '</span>';
+
+                    group.appendChild(bar);
+                    group.appendChild(info);
+                    barContainer.appendChild(group);
+
+                    var dpBox = document.createElement('div');
+                    dpBox.className = 'dp-box';
+                    dpBox.id = 'dp-' + i;
+                    dpBox.innerHTML = '<span class="text-xs text-slate-500">dp[' + i + ']</span><span class="font-bold text-lg" id="dp-val-' + i + '">' + (i === 0 ? '0' : '∞') + '</span>';
+                    dpContainer.appendChild(dpBox);
+                }
+            }
+
+            function generateSteps() {
+                actions = [];
+                var incst = [];
+                var decst = [];
+                var incv = Array(n).fill(-1);
+                var decv = Array(n).fill(-1);
+                var dp = Array(n).fill(Infinity);
+                dp[0] = 0;
+
+                actions.push({ type: 'INIT', line: 1, desc: 'Initialize variables, array length n = ' + n });
+
+                for (var i = 0; i < n; i++) {
+                    actions.push({ type: 'ITERATE', line: 7, i: i, desc: '[Monotonic Stack Phase] Checking index i = ' + i + ', value nums[' + i + '] = ' + nums[i] });
+
+                    actions.push({ type: 'CHECK_INC', line: 8, i: i, desc: 'Check incst: Find indices whose next >= element is ' + nums[i] });
+                    while (incst.length > 0 && nums[incst[incst.length - 1]] <= nums[i]) {
+                        var topInc = incst.pop();
+                        incv[topInc] = i;
+                        actions.push({ type: 'POP_INC', line: 9, i: i, top: topInc, desc: 'nums[' + topInc + '](' + nums[topInc] + ') <= nums[' + i + '](' + nums[i] + ')! Found jump target ' + i + ' for index ' + topInc });
+                    }
+                    incst.push(i);
+                    actions.push({ type: 'PUSH_INC', line: 12, i: i, desc: 'Push index ' + i + ' into incst, waiting for a larger or equal element' });
+
+                    actions.push({ type: 'CHECK_DEC', line: 14, i: i, desc: 'Check decst: Find indices whose next strictly < element is ' + nums[i] });
+                    while (decst.length > 0 && nums[decst[decst.length - 1]] > nums[i]) {
+                        var topDec = decst.pop();
+                        decv[topDec] = i;
+                        actions.push({ type: 'POP_DEC', line: 15, i: i, top: topDec, desc: 'nums[' + topDec + '](' + nums[topDec] + ') > nums[' + i + '](' + nums[i] + ')! Found jump target ' + i + ' for index ' + topDec });
+                    }
+                    decst.push(i);
+                    actions.push({ type: 'PUSH_DEC', line: 18, i: i, desc: 'Push index ' + i + ' into decst, waiting for a strictly smaller element' });
+                }
+
+                actions.push({ type: 'DP_INIT', line: 22, desc: '[DP Phase] Initialize DP array. dp[0] = 0, others are infinity' });
+
+                for (var j = 0; j < n; j++) {
+                    var currDpStr = dp[j] === Infinity ? '∞' : dp[j];
+                    actions.push({ type: 'DP_ITERATE', line: 24, i: j, desc: 'Calculate min cost from index i = ' + j + '. Current dp[' + j + '] = ' + currDpStr });
+
+                    if (dp[j] !== Infinity) {
+                        if (incv[j] !== -1) {
+                            actions.push({ type: 'DP_UPDATE_CHECK', line: 25, i: j, target: incv[j], desc: 'Can jump to ' + incv[j] + ' via condition 1 (next >=)' });
+                            var newCostInc = dp[j] + costs[incv[j]];
+                            var oldCostInc = dp[incv[j]];
+                            if (newCostInc < dp[incv[j]]) {
+                                dp[incv[j]] = newCostInc;
+                            }
+                            var oldCostIncStr = oldCostInc === Infinity ? '∞' : oldCostInc;
+                            actions.push({ type: 'DP_UPDATE_INC', line: 26, i: j, target: incv[j], cost: costs[incv[j]], oldVal: oldCostInc, newVal: dp[incv[j]], desc: 'Update dp[' + incv[j] + '] = min(' + oldCostIncStr + ', ' + dp[j] + ' + ' + costs[incv[j]] + ') = ' + dp[incv[j]] });
+                        }
+
+                        if (decv[j] !== -1) {
+                            actions.push({ type: 'DP_UPDATE_CHECK', line: 28, i: j, target: decv[j], desc: 'Can jump to ' + decv[j] + ' via condition 2 (next <)' });
+                            var newCostDec = dp[j] + costs[decv[j]];
+                            var oldCostDec = dp[decv[j]];
+                            if (newCostDec < dp[decv[j]]) {
+                                dp[decv[j]] = newCostDec;
+                            }
+                            var oldCostDecStr = oldCostDec === Infinity ? '∞' : oldCostDec;
+                            actions.push({ type: 'DP_UPDATE_DEC', line: 29, i: j, target: decv[j], cost: costs[decv[j]], oldVal: oldCostDec, newVal: dp[decv[j]], desc: 'Update dp[' + decv[j] + '] = min(' + oldCostDecStr + ', ' + dp[j] + ' + ' + costs[decv[j]] + ') = ' + dp[decv[j]] });
+                        }
+                    } else {
+                        actions.push({ type: 'DP_SKIP', line: 24, i: j, desc: 'dp[' + j + '] is infinity (unreachable), skipping' });
+                    }
+                }
+
+                actions.push({ type: 'DONE', line: 32, desc: 'Done! Minimum cost to reach the end is ' + dp[n - 1] });
+            }
+
+            function drawArrow(fromIdx, toIdx, type) {
+                var svg = document.getElementById('arrowSvg');
+                var fromEl = document.getElementById('bar-' + fromIdx);
+                var toEl = document.getElementById('bar-' + toIdx);
+
+                if (!fromEl || !toEl) return;
+
+                var fromRect = fromEl.getBoundingClientRect();
+                var toRect = toEl.getBoundingClientRect();
+                var containerRect = svg.getBoundingClientRect();
+
+                var startX = fromRect.left + fromRect.width / 2 - containerRect.left;
+                var startY = fromRect.top - containerRect.top;
+                var endX = toRect.left + toRect.width / 2 - containerRect.left;
+                var endY = toRect.top - containerRect.top;
+
+                var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+
+                var midX = (startX + endX) / 2;
+                var controlY = Math.min(startY, endY) - 50 - (Math.abs(fromIdx - toIdx) * 15);
+
+                path.setAttribute('d', 'M ' + startX + ' ' + startY + ' Q ' + midX + ' ' + controlY + ' ' + endX + ' ' + endY);
+
+                if (type === 'inc') {
+                    path.setAttribute('stroke', '#60a5fa');
+                    path.setAttribute('marker-end', 'url(#arrowhead-inc)');
+                } else if (type === 'dec') {
+                    path.setAttribute('stroke', '#f87171');
+                    path.setAttribute('marker-end', 'url(#arrowhead-dec)');
+                } else if (type === 'dp') {
+                    path.setAttribute('stroke', '#34d399');
+                    path.setAttribute('stroke-dasharray', '5,5');
+                    path.setAttribute('marker-end', 'url(#arrowhead-dp)');
+                }
+
+                path.classList.add('arrow-path');
+                path.id = 'arrow-' + type + '-' + fromIdx + '-' + toIdx;
+                svg.appendChild(path);
+            }
+
+            function highlightCode(line) {
+                var lines = document.querySelectorAll('.code-line');
+                for (var i = 0; i < lines.length; i++) {
+                    lines[i].classList.remove('active');
+                }
+                var el = document.getElementById('line-' + line);
+                if (el) {
+                    el.classList.add('active');
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+
+            function resetStyles() {
+                var bars = document.querySelectorAll('.bar');
+                for (var i = 0; i < bars.length; i++) { bars[i].className = 'bar bg-slate-200'; }
+
+                var dpBoxes = document.querySelectorAll('.dp-box');
+                for (var i = 0; i < dpBoxes.length; i++) { dpBoxes[i].className = 'dp-box'; }
+
+                var svg = document.getElementById('arrowSvg');
+                svg.innerHTML = '<defs><marker id="arrowhead-inc" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#60a5fa" /></marker><marker id="arrowhead-dec" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#f87171" /></marker><marker id="arrowhead-dp" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#34d399" /></marker></defs>';
+            }
+
+            function renderState(stepIndex) {
+                if (stepIndex < 0) return;
+                resetStyles();
+
+                var currentIncst = [];
+                var currentDecst = [];
+                var dpVals = Array(n).fill(Infinity);
+                dpVals[0] = 0;
+                var arrowsToDraw = [];
+
+                for (var i = 0; i <= stepIndex; i++) {
+                    var act = actions[i];
+                    if (act.type === 'PUSH_INC') currentIncst.push(act.i);
+                    if (act.type === 'POP_INC') {
+                        currentIncst.pop();
+                        arrowsToDraw.push({ from: act.top, to: act.i, type: 'inc' });
+                    }
+                    if (act.type === 'PUSH_DEC') currentDecst.push(act.i);
+                    if (act.type === 'POP_DEC') {
+                        currentDecst.pop();
+                        arrowsToDraw.push({ from: act.top, to: act.i, type: 'dec' });
+                    }
+                    if (act.type === 'DP_UPDATE_INC' || act.type === 'DP_UPDATE_DEC') {
+                        dpVals[act.target] = act.newVal;
+                    }
+                }
+
+                var incstHtml = '';
+                for (var i = 0; i < currentIncst.length; i++) {
+                    var val = currentIncst[i];
+                    incstHtml += '<div class="stack-item text-blue-600">Idx ' + val + ' (' + nums[val] + ')</div>';
+                }
+                incstContainer.innerHTML = incstHtml;
+
+                var decstHtml = '';
+                for (var i = 0; i < currentDecst.length; i++) {
+                    var val = currentDecst[i];
+                    decstHtml += '<div class="stack-item text-red-600">Idx ' + val + ' (' + nums[val] + ')</div>';
+                }
+                decstContainer.innerHTML = decstHtml;
+
+                for (var i = 0; i < n; i++) {
+                    document.getElementById('dp-val-' + i).innerText = dpVals[i] === Infinity ? '∞' : dpVals[i];
+                }
+
+                for (var i = 0; i < arrowsToDraw.length; i++) {
+                    drawArrow(arrowsToDraw[i].from, arrowsToDraw[i].to, arrowsToDraw[i].type);
+                }
+
+                var currentAct = actions[stepIndex];
+                highlightCode(currentAct.line);
+                narrative.innerHTML = currentAct.desc;
+
+                if (currentAct.type === 'ITERATE' || currentAct.type === 'CHECK_INC' || currentAct.type === 'CHECK_DEC') {
+                    document.getElementById('bar-' + currentAct.i).classList.add('bg-amber-300', 'active');
+                }
+                if (currentAct.type === 'POP_INC' || currentAct.type === 'POP_DEC') {
+                    document.getElementById('bar-' + currentAct.i).classList.add('bg-amber-300');
+                    document.getElementById('bar-' + currentAct.top).classList.add('bg-purple-300', 'active');
+                }
+
+                if (currentAct.type.indexOf('DP_') === 0) {
+                    document.getElementById('dp-' + currentAct.i).classList.add('active');
+                    if (currentAct.target !== undefined) {
+                        drawArrow(currentAct.i, currentAct.target, 'dp');
+                    }
+                }
+                if (currentAct.type === 'DP_UPDATE_INC' || currentAct.type === 'DP_UPDATE_DEC') {
+                    var targetDpBox = document.getElementById('dp-' + currentAct.target);
+                    if (targetDpBox) {
+                        targetDpBox.classList.add('updated');
+                        setTimeout(function () { targetDpBox.classList.remove('updated'); }, 500);
+                    }
+                }
+            }
+
+            function reset() {
+                currentStep = -1;
+                initVisuals();
+                highlightCode(1);
+                narrative.innerText = "Click 'Next' to start the algorithm...";
+            }
+
+            document.getElementById('btnNext').addEventListener('click', function () {
+                if (currentStep < actions.length - 1) {
+                    currentStep++;
+                    renderState(currentStep);
+                }
+            });
+
+            document.getElementById('btnPrev').addEventListener('click', function () {
+                if (currentStep > 0) {
+                    currentStep--;
+                    renderState(currentStep);
+                } else if (currentStep === 0) {
+                    reset();
+                }
+            });
+
+            document.getElementById('btnReset').addEventListener('click', reset);
+
+            window.addEventListener('resize', function () {
+                renderState(currentStep);
+            });
+
+            initCodeBlock();
+            initVisuals();
+            generateSteps();
+        };
+    </script>
+
+    <!-- Footer -->
+    <footer
+        class="max-w-7xl mx-auto px-6 py-12 border-t border-slate-200 mt-12 flex flex-col md:flex-row justify-between items-center gap-6 w-full">
+        <p class="text-slate-500 text-sm">&copy; 2026 Visual LeetCode. Created for algorithm enthusiasts.</p>
+        <div class="flex gap-8">
+            <a href="https://github.com/JackKuo-tw/VisualLeetCode" target="_blank"
+                class="text-slate-400 hover:text-slate-600 transition-colors text-sm font-medium">GitHub</a>
+        </div>
+    </footer>
+</body>
+
+</html>
