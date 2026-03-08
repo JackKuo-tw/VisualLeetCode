@@ -117,3 +117,7 @@ To use `highlight.js` with line-by-line tracing:
 - **Colors:** Primary blue: `blue-600`. Background: `slate-50`. Text: `slate-800`.
 - **Typography:** Standard sans-serif for UI, `font-mono` for code/step indices.
 - **Buttons:** Use `transition-colors`, `rounded-lg`, and `hover` states.
+
+## 5. Update Sitemap
+
+- **Sitemap Generation:** Whenever a new page is added, you **must** update `sitemap.xml` to include the URL of the newly created page.
