@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1H6WCCWZS2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-1H6WCCWZS2');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual LeetCode - Morris Traversal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --panel-bg: #ffffff;
+            --text-color: #1e293b;
+            --node-bg: #ffffff;
+            --node-border: #cbd5e1;
+            --curr-color: #3b82f6; 
+            --prev-color: #eab308; 
+            --visited-color: #22c55e;
+            --thread-color: #ef4444; 
+            --code-bg: #f8fafc;
+            --code-hl: rgba(96, 165, 250, 0.2);
+            --code-border: #e2e8f0;
+        }
+
+        body { background-color: #f8fafc; }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 28px;
+            text-align: center;
+            font-weight: bold;
+            color: #1e293b;
+        }
+
+        .main-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        @media (min-width: 1024px) {
+            .main-layout {
+                flex-direction: row;
+                align-items: stretch;
+            }
+        }
+
+        .left-column {
+            flex: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-width: 0;
+        }
+
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-width: 0;
+        }
+
+        .panel {
+            background-color: var(--panel-bg);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .canvas-container {
+            display: flex;
+            justify-content: center;
+            overflow-x: auto;
+            background-color: #f1f5f9;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        canvas {
+            background-color: transparent;
+        }
+
+        .controls-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn-group-main {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .btn-group-playback {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+        }
+
+        button:hover:not(:disabled) { background-color: #2563eb; }
+        button:active:not(:disabled) { transform: scale(0.97); }
+        button:disabled {
+            background-color: #e2e8f0;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        button.outline {
+            background-color: transparent;
+            border: 2px solid #3b82f6;
+            color: #3b82f6;
+        }
+        button.outline:hover:not(:disabled) { background-color: rgba(59, 130, 246, 0.1); }
+        
+        button.mode-btn {
+            background-color: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+        }
+        button.mode-btn:hover:not(:disabled) { background-color: #e2e8f0; }
+        button.mode-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        button.control-btn {
+            background-color: #cbd5e1;
+            color: #334155;
+        }
+        button.control-btn:hover:not(:disabled) { background-color: #94a3b8; }
+
+        .progress-container {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        input[type=range] {
+            flex: 1;
+            cursor: pointer;
+        }
+        #stepCounter {
+            font-size: 14px;
+            color: #64748b;
+            min-width: 60px;
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-top: 10px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            color: #475569;
+        }
+        .legend-item { display: flex; align-items: center; gap: 6px; }
+        .color-box { width: 14px; height: 14px; border-radius: 4px; }
+
+        .array-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            min-height: 40px;
+            align-items: center;
+        }
+        .array-box {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--node-bg);
+            border: 2px solid var(--visited-color);
+            color: #1e293b;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            animation: popIn 0.2s ease-out;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .log-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            height: 140px;
+            overflow-y: auto;
+            padding: 12px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #64748b;
+            display: flex;
+            flex-direction: column;
+        }
+        .log-entry { margin-bottom: 2px; }
+        .log-entry.highlight { color: #0f172a; font-weight: bold; }
+
+        .code-container {
+            background-color: var(--code-bg);
+            border: 1px solid var(--code-border);
+            border-radius: 12px;
+            overflow: hidden;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .code-header {
+            background-color: #f1f5f9;
+            padding: 12px 16px;
+            font-weight: bold;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
+        }
+
+        .code-block {
+            display: none;
+            padding: 12px 0;
+            overflow-y: auto;
+            overflow-x: auto;
+            flex: 1;
+        }
+        .code-block.active {
+            display: block;
+        }
+
+        .code-line {
+            padding: 2px 16px 2px 12px;
+            border-left: 4px solid transparent;
+            color: #334155;
+            white-space: pre;
+            transition: all 0.2s;
+        }
+
+        .code-line .keyword { color: #d946ef; }
+        .code-line .variable { color: #0ea5e9; }
+        .code-line .property { color: #16a34a; }
+        .code-line .comment { color: #64748b; }
+
+        .code-line.active-line {
+            background-color: var(--code-hl);
+            border-left: 4px solid #60a5fa !important;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="text-slate-800 p-0 font-sans">
+    <nav class="border-b border-slate-200 bg-white/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2 group">
+                <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" />
+                    </svg>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-slate-900">Visual <span class="text-blue-600">LeetCode</span></span>
+            </a>
+            <div class="flex gap-6">
+                <a href="https://github.com/JackKuo-tw/VisualLeetCode" target="_blank" class="text-slate-500 hover:text-slate-900 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" /><path d="M9 18c-4.51 2-5-3-7-3" /></svg>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto p-6 md:p-10 space-y-6">
+        <h1 class="text-3xl font-bold text-center text-slate-900 mb-2">Morris Traversal</h1>
+        <div id="mode-prompt" class="flex items-center justify-center gap-2 bg-yellow-50 text-yellow-800 border border-yellow-200 px-4 py-3 rounded-lg mb-6 w-max mx-auto shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+            </svg>
+            <span class="font-medium text-sm">Please select <strong>Pre-order</strong>, <strong>In-order</strong>, or <strong>Post-order</strong> below to start.</span>
+        </div>
+
+    <div class="main-layout">
+        <!-- Left: Animation & Log -->
+        <div class="left-column">
+            <div class="panel">
+                <div class="btn-group-main mb-3">
+                    <button id="btnPre" class="mode-btn" onclick="initTraversal('pre')">Pre-order</button>
+                    <button id="btnIn" class="mode-btn" onclick="initTraversal('in')">In-order</button>
+                    <button id="btnPost" class="mode-btn" onclick="initTraversal('post')">Post-order</button>
+                </div>
+                
+                <div class="canvas-container mt-3">
+                    <canvas id="treeCanvas" width="600" height="320"></canvas>
+                </div>
+
+                <div class="legend mt-3">
+                    <div class="legend-item"><div class="color-box" style="background:var(--curr-color)"></div>Current Node (curr)</div>
+                    <div class="legend-item"><div class="color-box" style="background:var(--prev-color)"></div>Predecessor (prev)</div>
+                    <div class="legend-item"><div class="color-box" style="background:var(--visited-color)"></div>Visited</div>
+                    <div class="legend-item"><div class="color-box" style="border-bottom: 3px dashed var(--thread-color)"></div>Thread</div>
+                </div>
+            </div>
+
+            <div class="panel controls-row">
+                <div class="btn-group-playback">
+                    <button id="btnStepBack" class="control-btn" onclick="stepBackward()" disabled>⏮ Step Back</button>
+                    <button id="btnPlayPause" class="control-btn" onclick="togglePlayPause()" disabled>▶ Play</button>
+                    <button id="btnStepFwd" class="control-btn" onclick="stepForward()" disabled>⏭ Step Forward</button>
+                    <button id="btnReset" class="outline" onclick="resetAll()" style="flex: 0.5;">Reset</button>
+                </div>
+                <div class="progress-container">
+                    <input type="range" id="progressBar" min="0" max="0" value="0" disabled oninput="seekTo(this.value)">
+                    <div id="stepCounter">0 / 0</div>
+                </div>
+                <div class="progress-container" style="margin-top:0">
+                    <label style="font-size:13px; color:#aaa; width:70px">Speed:</label>
+                    <input type="range" id="speedSlider" min="0.2" max="3" step="0.2" value="1.0">
+                    <span id="speedVal" style="font-size:13px; color:#aaa; width:40px; text-align:right">1.0x</span>
+                </div>
+            </div>
+
+            <div class="panel" style="display: flex; flex-direction: column; gap: 15px;">
+                <div>
+                    <h3 style="margin: 0 0 10px 0; font-size: 15px; color:#aaa;">Visited Nodes:</h3>
+                    <div class="array-container" id="arrayContainer">
+                        <div style="color: #555; font-style: italic;">Please select a mode to start...</div>
+                    </div>
+                </div>
+                <div>
+                    <h3 style="margin: 0 0 10px 0; font-size: 15px; color:#aaa;">Execution Log:</h3>
+                    <div class="log-box" id="logBox"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Code -->
+        <div class="right-column">
+            <div class="panel code-container" style="padding:0;">
+                <div class="code-header" id="codeHeader">Code Trace (Select Mode)</div>
+
+                <!-- In-order Code -->
+                <div id="code-in" class="code-block">
+<div class="code-line" id="in-1"><span class="keyword">let</span> <span class="variable">curr</span> = root;</div>
+<div class="code-line" id="in-2"><span class="keyword">while</span> (<span class="variable">curr</span> !== <span class="keyword">null</span>) {</div>
+<div class="code-line" id="in-3">    <span class="keyword">if</span> (<span class="variable">curr</span>.<span class="property">left</span> === <span class="keyword">null</span>) {</div>
+<div class="code-line" id="in-4">        visit(<span class="variable">curr</span>);</div>
+<div class="code-line" id="in-5">        <span class="variable">curr</span> = <span class="variable">curr</span>.<span class="property">right</span>;</div>
+<div class="code-line" id="in-6">    } <span class="keyword">else</span> {</div>
+<div class="code-line" id="in-7">        <span class="keyword">let</span> <span class="variable">prev</span> = <span class="variable">curr</span>.<span class="property">left</span>;</div>
+<div class="code-line" id="in-8">        <span class="keyword">while</span> (<span class="variable">prev</span>.<span class="property">right</span> && <span class="variable">prev</span>.<span class="property">right</span> !== <span class="variable">curr</span>) {</div>
+<div class="code-line" id="in-9">            <span class="variable">prev</span> = <span class="variable">prev</span>.<span class="property">right</span>;</div>
+<div class="code-line" id="in-10">        }</div>
+<div class="code-line" id="in-11">        <span class="keyword">if</span> (<span class="variable">prev</span>.<span class="property">right</span> === <span class="keyword">null</span>) {</div>
+<div class="code-line" id="in-12">            <span class="variable">prev</span>.<span class="property">right</span> = <span class="variable">curr</span>;</div>
+<div class="code-line" id="in-13">            <span class="variable">curr</span> = <span class="variable">curr</span>.<span class="property">left</span>;</div>
+<div class="code-line" id="in-14">        } <span class="keyword">else</span> {</div>
+<div class="code-line" id="in-15">            <span class="variable">prev</span>.<span class="property">right</span> = <span class="keyword">null</span>;</div>
+<div class="code-line" id="in-16">            visit(<span class="variable">curr</span>);</div>
+<div class="code-line" id="in-17">            <span class="variable">curr</span> = <span class="variable">curr</span>.<span class="property">right</span>;</div>
+<div class="code-line" id="in-18">        }</div>
+<div class="code-line" id="in-19">    }</div>
+<div class="code-line" id="in-20">}</div>
+                </div>
+
+                <!-- Pre-order Code -->
+                <div id="code-pre" class="code-block">
+<div class="code-line" id="pre-1"><span class="keyword">let</span> <span class="variable">curr</span> = root;</div>
+<div class="code-line" id="pre-2"><span class="keyword">while</span> (<span class="variable">curr</span> !== <span class="keyword">null</span>) {</div>
+<div class="code-line" id="pre-3">    <span class="keyword">if</span> (<span class="variable">curr</span>.<span class="property">left</span> === <span class="keyword">null</span>) {</div>
+<div class="code-line" id="pre-4">        visit(<span class="variable">curr</span>);</div>
+<div class="code-line" id="pre-5">        <span class="variable">curr</span> = <span class="variable">curr</span>.<span class="property">right</span>;</div>
+<div class="code-line" id="pre-6">    } <span class="keyword">else</span> {</div>
+<div class="code-line" id="pre-7">        <span class="keyword">let</span> <span class="variable">prev</span> = <span class="variable">curr</span>.<span class="property">left</span>;</div>
+<div class="code-line" id="pre-8">        <span class="keyword">while</span> (<span class="variable">prev</span>.<span class="property">right</span> && <span class="variable">prev</span>.<span class="property">right</span> !== <span class="variable">curr</span>) {</div>
+<div class="code-line" id="pre-9">            <span class="variable">prev</span> = <span class="variable">prev</span>.<span class="property">right</span>;</div>
+<div class="code-line" id="pre-10">        }</div>
+<div class="code-line" id="pre-11">        <span class="keyword">if</span> (<span class="variable">prev</span>.<span class="property">right</span> === <span class="keyword">null</span>) {</div>
+<div class="code-line" id="pre-12">            visit(<span class="variable">curr</span>); <span class="comment">// Visit before threading</span></div>
+<div class="code-line" id="pre-13">            <span class="variable">prev</span>.<span class="property">right</span> = <span class="variable">curr</span>;</div>
+<div class="code-line" id="pre-14">            <span class="variable">curr</span> = <span class="variable">curr</span>.<span class="property">left</span>;</div>
+<div class="code-line" id="pre-15">        } <span class="keyword">else</span> {</div>
+<div class="code-line" id="pre-16">            <span class="variable">prev</span>.<span class="property">right</span> = <span class="keyword">null</span>;</div>
+<div class="code-line" id="pre-17">            <span class="variable">curr</span> = <span class="variable">curr</span>.<span class="property">right</span>;</div>
+<div class="code-line" id="pre-18">        }</div>
+<div class="code-line" id="pre-19">    }</div>
+<div class="code-line" id="pre-20">}</div>
+                </div>
+
+                <!-- Post-order Code -->
+                <div id="code-post" class="code-block">
+<div class="code-line" id="post-1"><span class="keyword">let</span> <span class="variable">dummy</span> = <span class="keyword">new</span> TreeNode(0);</div>
+<div class="code-line" id="post-2"><span class="variable">dummy</span>.<span class="property">left</span> = root;</div>
+<div class="code-line" id="post-3"><span class="keyword">let</span> <span class="variable">curr</span> = <span class="variable">dummy</span>;</div>
+<div class="code-line" id="post-4"><span class="keyword">while</span> (<span class="variable">curr</span> !== <span class="keyword">null</span>) {</div>
+<div class="code-line" id="post-5">    <span class="keyword">if</span> (<span class="variable">curr</span>.<span class="property">left</span> === <span class="keyword">null</span>) {</div>
+<div class="code-line" id="post-6">        <span class="variable">curr</span> = <span class="variable">curr</span>.<span class="property">right</span>;</div>
+<div class="code-line" id="post-7">    } <span class="keyword">else</span> {</div>
+<div class="code-line" id="post-8">        <span class="keyword">let</span> <span class="variable">prev</span> = <span class="variable">curr</span>.<span class="property">left</span>;</div>
+<div class="code-line" id="post-9">        <span class="keyword">while</span> (<span class="variable">prev</span>.<span class="property">right</span> && <span class="variable">prev</span>.<span class="property">right</span> !== <span class="variable">curr</span>) {</div>
+<div class="code-line" id="post-10">            <span class="variable">prev</span> = <span class="variable">prev</span>.<span class="property">right</span>;</div>
+<div class="code-line" id="post-11">        }</div>
+<div class="code-line" id="post-12">        <span class="keyword">if</span> (<span class="variable">prev</span>.<span class="property">right</span> === <span class="keyword">null</span>) {</div>
+<div class="code-line" id="post-13">            <span class="variable">prev</span>.<span class="property">right</span> = <span class="variable">curr</span>;</div>
+<div class="code-line" id="post-14">            <span class="variable">curr</span> = <span class="variable">curr</span>.<span class="property">left</span>;</div>
+<div class="code-line" id="post-15">        } <span class="keyword">else</span> {</div>
+<div class="code-line" id="post-16">            <span class="variable">prev</span>.<span class="property">right</span> = <span class="keyword">null</span>;</div>
+<div class="code-line" id="post-17">            reverseVisit(<span class="variable">curr</span>.<span class="property">left</span>, <span class="variable">prev</span>);</div>
+<div class="code-line" id="post-18">            <span class="variable">curr</span> = <span class="variable">curr</span>.<span class="property">right</span>;</div>
+<div class="code-line" id="post-19">        }</div>
+<div class="code-line" id="post-20">    }</div>
+<div class="code-line" id="post-21">}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // === Core Data Structures ===
+    class TreeNode {
+        constructor(val, x, y) {
+            this.val = val;
+            this.left = null;
+            this.right = null;
+            this.x = x;
+            this.y = y;
+            this.isDummy = false;
+        }
+    }
+
+    const root = new TreeNode(4, 300, 70);
+    root.left = new TreeNode(2, 150, 140);
+    root.right = new TreeNode(6, 450, 140);
+    root.left.left = new TreeNode(1, 75, 230);
+    root.left.right = new TreeNode(3, 225, 230);
+    root.right.left = new TreeNode(5, 375, 230);
+    root.right.right = new TreeNode(7, 525, 230);
+
+    const ALL_NODES = [root, root.left, root.right, root.left.left, root.left.right, root.right.left, root.right.right];
+
+    // === System State & History ===
+    let canvas = document.getElementById('treeCanvas');
+    let ctx = canvas.getContext('2d');
+    
+    let history = [];       
+    let currentStep = -1;   
+    let playTimer = null;
+    let isPlaying = false;
+    let currentMode = '';
+
+    // === Rendering System ===
+    function renderSnapshot(state) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (!state) return;
+
+        let nodesToDraw = [...ALL_NODES];
+        if (state.dummy) nodesToDraw.push(state.dummy);
+
+        // 1. Draw Edges
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#cbd5e1';
+        for (let node of nodesToDraw) {
+            if (node.left) drawLine(node.x, node.y, node.left.x, node.left.y);
+            if (node.right && !state.threads.some(t => t.from === node && t.to === node.right)) {
+                drawLine(node.x, node.y, node.right.x, node.right.y);
+            }
+        }
+
+        // 2. Draw Threads
+        for (let thread of state.threads) {
+            drawCurve(thread.from, thread.to);
+        }
+
+        // 3. Draw Highlight Path
+        if (state.highlightPath && state.highlightPath.length > 0) {
+            ctx.lineWidth = 6;
+            ctx.strokeStyle = 'rgba(234, 179, 8, 0.4)';
+            for (let i = 0; i < state.highlightPath.length - 1; i++) {
+                let n1 = state.highlightPath[i];
+                let n2 = state.highlightPath[i+1];
+                drawLine(n1.x, n1.y, n2.x, n2.y);
+            }
+        }
+
+        // 4. Draw Nodes
+        for (let node of nodesToDraw) {
+            drawNode(node, state);
+        }
+    }
+
+    function drawLine(x1, y1, x2, y2) {
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+    }
+
+    function drawCurve(fromNode, toNode) {
+        ctx.beginPath();
+        ctx.setLineDash([6, 6]);
+        ctx.strokeStyle = '#ef4444'; 
+        ctx.lineWidth = 2;
+        
+        let startX = fromNode.x;
+        let startY = fromNode.y;
+        let endX = toNode.x;
+        let endY = toNode.y;
+
+        let cpX = startX + (endX - startX) * 0.8 + 40;
+        let cpY = startY - Math.abs(startY - endY) * 0.4;
+        if (endX < startX) cpX = startX - 50;
+
+        ctx.moveTo(startX, startY);
+        ctx.quadraticCurveTo(cpX, cpY, endX, endY);
+        ctx.stroke();
+        ctx.setLineDash([]); 
+
+        let angle = Math.atan2(endY - cpY, endX - cpX);
+        ctx.beginPath();
+        ctx.moveTo(endX, endY);
+        ctx.lineTo(endX - 10 * Math.cos(angle - Math.PI / 6), endY - 10 * Math.sin(angle - Math.PI / 6));
+        ctx.lineTo(endX - 10 * Math.cos(angle + Math.PI / 6), endY - 10 * Math.sin(angle + Math.PI / 6));
+        ctx.fillStyle = '#ef4444';
+        ctx.fill();
+    }
+
+    function drawNode(node, state) {
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 20, 0, 2 * Math.PI);
+        
+        if (state.visited.includes(node.val)) {
+            ctx.fillStyle = '#dcfce7';
+            ctx.strokeStyle = '#22c55e';
+        } else {
+            ctx.fillStyle = '#ffffff';
+            ctx.strokeStyle = '#cbd5e1';
+        }
+        ctx.fill();
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        if (state.curr === node) {
+            ctx.beginPath(); ctx.arc(node.x, node.y, 25, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 4; ctx.stroke();
+        } else if (state.prev === node) {
+            ctx.beginPath(); ctx.arc(node.x, node.y, 25, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#eab308'; ctx.lineWidth = 4; ctx.stroke();
+        }
+
+        ctx.fillStyle = '#1e293b';
+        ctx.font = 'bold 18px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(node.val, node.x, node.y);
+    }
+
+    // === Simulators ===
+    function generateInorderHistory() {
+        let h = [];
+        let visited = [];
+        let threads = [];
+        
+        const pushState = (c, p, line, m, isVisit = false) => {
+            h.push({
+                curr: c, prev: p, line: line, msg: m, isVisit,
+                threads: threads.map(t => ({...t})),
+                visited: [...visited], highlightPath: []
+            });
+        };
+
+        let curr = root;
+        pushState(curr, null, 1, `Initialize curr = root`);
+        
+        while (curr) {
+            pushState(curr, null, 2, `Enter while loop`);
+            if (!curr.left) {
+                pushState(curr, null, 3, `Left child is null, prepare to visit`);
+                visited.push(curr.val);
+                pushState(curr, null, 4, `[Visit] Node ${curr.val}`, true);
+                curr = curr.right;
+                pushState(curr, null, 5, `Move curr to right`);
+            } else {
+                let prev = curr.left;
+                pushState(curr, prev, 7, `Find the rightmost node in the left subtree (prev)`);
+                while (prev.right && prev.right !== curr) {
+                    prev = prev.right;
+                    pushState(curr, prev, 9, `prev moves to right`);
+                }
+                if (!prev.right) {
+                    pushState(curr, prev, 11, `Found predecessor ${prev.val}, ready to thread`);
+                    threads.push({from: prev, to: curr});
+                    prev.right = curr;
+                    pushState(curr, prev, 12, `Thread created: prev.right points to curr`);
+                    curr = curr.left;
+                    pushState(curr, prev, 13, `Move curr to left`);
+                } else {
+                    pushState(curr, prev, 14, `Thread found, left subtree visited`);
+                    threads = threads.filter(t => !(t.from === prev && t.to === curr));
+                    prev.right = null;
+                    pushState(curr, prev, 15, `Remove thread: prev.right = null`);
+                    visited.push(curr.val);
+                    pushState(curr, prev, 16, `[Visit] Node ${curr.val}`, true);
+                    curr = curr.right;
+                    pushState(curr, prev, 17, `Move curr to right`);
+                }
+            }
+        }
+        pushState(null, null, 20, `Traversal Complete!`);
+        return h;
+    }
+
+    function generatePreorderHistory() {
+        let h = [];
+        let visited = [];
+        let threads = [];
+        const pushState = (c, p, line, m, isVisit = false) => {
+            h.push({
+                curr: c, prev: p, line: line, msg: m, isVisit,
+                threads: threads.map(t => ({...t})),
+                visited: [...visited], highlightPath: []
+            });
+        };
+
+        let curr = root;
+        pushState(curr, null, 1, `Initialize curr = root`);
+        
+        while (curr) {
+            pushState(curr, null, 2, `Enter while loop`);
+            if (!curr.left) {
+                pushState(curr, null, 3, `Left child is null, prepare to visit`);
+                visited.push(curr.val);
+                pushState(curr, null, 4, `[Visit] Node ${curr.val}`, true);
+                curr = curr.right;
+                pushState(curr, null, 5, `Move curr to right`);
+            } else {
+                let prev = curr.left;
+                pushState(curr, prev, 7, `Find predecessor node (prev)`);
+                while (prev.right && prev.right !== curr) {
+                    prev = prev.right;
+                    pushState(curr, prev, 9, `prev moves to right`);
+                }
+                if (!prev.right) {
+                    pushState(curr, prev, 11, `Found predecessor ${prev.val}, ready to thread`);
+                    visited.push(curr.val);
+                    pushState(curr, prev, 12, `[Visit] Node ${curr.val} before threading`, true);
+                    threads.push({from: prev, to: curr});
+                    prev.right = curr;
+                    pushState(curr, prev, 13, `Thread created: prev.right = curr`);
+                    curr = curr.left;
+                    pushState(curr, prev, 14, `Move curr to left`);
+                } else {
+                    pushState(curr, prev, 15, `Thread found, left subtree visited`);
+                    threads = threads.filter(t => !(t.from === prev && t.to === curr));
+                    prev.right = null;
+                    pushState(curr, prev, 16, `Remove thread: prev.right = null`);
+                    curr = curr.right;
+                    pushState(curr, prev, 17, `Move curr to right`);
+                }
+            }
+        }
+        pushState(null, null, 20, `Traversal Complete!`);
+        return h;
+    }
+
+    function generatePostorderHistory() {
+        let h = [];
+        let visited = [];
+        let threads = [];
+        
+        let dummy = new TreeNode('D', root.x, root.y - 45);
+        dummy.left = root;
+        dummy.isDummy = true;
+
+        const pushState = (c, p, line, m, hp = [], isVisit = false) => {
+            h.push({
+                curr: c, prev: p, line: line, msg: m, isVisit,
+                threads: threads.map(t => ({...t})),
+                visited: [...visited], highlightPath: [...hp],
+                dummy: dummy
+            });
+        };
+
+        pushState(dummy, null, 1, `Create Dummy node`);
+        pushState(dummy, null, 2, `Dummy.left points to root`);
+        
+        let curr = dummy;
+        pushState(curr, null, 3, `Initialize curr = dummy`);
+
+        while (curr) {
+            pushState(curr, null, 4, `Enter while loop`);
+            if (!curr.left) {
+                pushState(curr, null, 5, `Left child is null`);
+                curr = curr.right;
+                pushState(curr, null, 6, `Move curr to right`);
+            } else {
+                let prev = curr.left;
+                pushState(curr, prev, 8, `Find predecessor node (prev)`);
+                while (prev.right && prev.right !== curr) {
+                    prev = prev.right;
+                    pushState(curr, prev, 10, `prev moves to right`);
+                }
+                if (!prev.right) {
+                    pushState(curr, prev, 12, `Found predecessor, ready to thread`);
+                    threads.push({from: prev, to: curr});
+                    prev.right = curr;
+                    pushState(curr, prev, 13, `Thread created: prev.right = curr`);
+                    curr = curr.left;
+                    pushState(curr, prev, 14, `Move curr to left`);
+                } else {
+                    pushState(curr, prev, 15, `Thread found`);
+                    threads = threads.filter(t => !(t.from === prev && t.to === curr));
+                    prev.right = null;
+                    pushState(curr, prev, 16, `Remove thread: prev.right = null`);
+                    
+                    // reverse visit
+                    let p = [];
+                    let temp = curr.left;
+                    while (temp) { p.push(temp); if(temp===prev) break; temp = temp.right; }
+                    pushState(curr, prev, 17, `Prepare to reverse-visit path`, p);
+                    
+                    for (let i = p.length - 1; i >= 0; i--) {
+                        visited.push(p[i].val);
+                        pushState(curr, prev, 17, `[Post-order Visit] Node ${p[i].val}`, p, true);
+                    }
+                    
+                    curr = curr.right;
+                    pushState(curr, prev, 18, `Reverse-visit complete, move curr to right`);
+                }
+            }
+        }
+        pushState(null, null, 21, `Traversal Complete!`);
+        return h;
+    }
+
+    // === UI Logic ===
+
+    function cleanTree() {
+        root.left.left.right = null;
+        root.left.right.right = null;
+        root.right.left.right = null;
+        root.right.right.right = null;
+    }
+
+    function resetAll() {
+        pausePlayback();
+        currentStep = -1;
+        history = [];
+        cleanTree();
+        
+        document.getElementById('arrayContainer').innerHTML = '<div style="color: #666; font-style: italic;">Please select a mode to start...</div>';
+        document.getElementById('logBox').innerHTML = '';
+        
+        const modePrompt = document.getElementById('mode-prompt');
+        if (modePrompt) modePrompt.style.display = 'flex';
+
+        ['btnStepBack', 'btnPlayPause', 'btnStepFwd'].forEach(id => document.getElementById(id).disabled = true);
+        document.getElementById('progressBar').disabled = true;
+        document.getElementById('progressBar').value = 0;
+        document.getElementById('stepCounter').innerText = "0 / 0";
+        document.getElementById('btnPlayPause').innerHTML = "▶ Play";
+        
+        // Hide all codes
+        document.querySelectorAll('.code-block').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.code-line').forEach(el => el.classList.remove('active-line'));
+        document.getElementById('codeHeader').innerText = "Code Trace (Select Mode)";
+        
+        renderSnapshot({visited: [], curr: null, prev: null, threads: [], highlightPath: []});
+    }
+
+    function initTraversal(type) {
+        resetAll();
+        currentMode = type;
+        
+        if (type === 'pre') document.getElementById('btnPre').classList.add('active');
+        else if (type === 'in') document.getElementById('btnIn').classList.add('active');
+        else if (type === 'post') document.getElementById('btnPost').classList.add('active');
+
+        const modePrompt = document.getElementById('mode-prompt');
+        if (modePrompt) modePrompt.style.display = 'none';
+
+        if (type === 'pre') history = generatePreorderHistory();
+        else if (type === 'in') history = generateInorderHistory();
+        else if (type === 'post') history = generatePostorderHistory();
+        
+        document.getElementById(`code-${type}`).classList.add('active');
+        const modeName = type === 'pre' ? 'Pre-order' : (type === 'in' ? 'In-order' : 'Post-order');
+        document.getElementById('codeHeader').innerText = `Code Trace - ${modeName}`;
+
+        document.getElementById('btnStepBack').disabled = false;
+        document.getElementById('btnPlayPause').disabled = false;
+        document.getElementById('btnStepFwd').disabled = false;
+        document.getElementById('progressBar').disabled = false;
+        document.getElementById('progressBar').max = history.length - 1;
+
+        goToStep(0);
+        togglePlayPause();
+    }
+
+    function goToStep(index) {
+        if (index < 0 || index >= history.length) return;
+        currentStep = parseInt(index);
+        
+        const state = history[currentStep];
+        if (!state) return;
+
+        // 1. Draw Map
+        renderSnapshot(state);
+
+        // 2. Bar
+        document.getElementById('progressBar').value = currentStep;
+        document.getElementById('stepCounter').innerText = `${currentStep} / ${history.length - 1}`;
+
+        // 3. Array
+        const arrContainer = document.getElementById('arrayContainer');
+        const currentBoxes = arrContainer.querySelectorAll('.array-box');
+        
+        let currentArrStr = Array.from(currentBoxes).map(el => el.innerText).join(',');
+        if (currentBoxes.length === 0 && !arrContainer.innerHTML.includes('No nodes visited yet')) {
+            currentArrStr = 'force-update';
+        }
+        
+        const newArrStr = state.visited.join(',');
+        
+        if (currentArrStr !== newArrStr) {
+            arrContainer.innerHTML = '';
+            if (state.visited.length === 0) {
+                arrContainer.innerHTML = '<div style="color: #666; font-style: italic;">No nodes visited yet</div>';
+            } else {
+                state.visited.forEach(val => {
+                    let div = document.createElement('div');
+                    div.className = 'array-box';
+                    div.innerText = val;
+                    arrContainer.appendChild(div);
+                });
+            }
+        }
+
+        // 4. Log
+        const logBox = document.getElementById('logBox');
+        logBox.innerHTML = '';
+        let startIdx = Math.max(0, currentStep - 50);
+        for(let i = startIdx; i <= currentStep; i++) {
+            let div = document.createElement('div');
+            div.className = 'log-entry' + (history[i].isVisit ? ' highlight' : '');
+            div.innerText = `> [${i}] ${history[i].msg}`;
+            logBox.appendChild(div);
+        }
+        logBox.scrollTop = logBox.scrollHeight;
+
+        // 5. Code Highlight
+        document.querySelectorAll('.code-line').forEach(el => el.classList.remove('active-line'));
+        if (state.line) {
+            const lineEl = document.getElementById(`${currentMode}-${state.line}`);
+            if (lineEl) {
+                lineEl.classList.add('active-line');
+                lineEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+  
+        // Button states
+        document.getElementById('btnStepBack').disabled = (currentStep === 0);
+        document.getElementById('btnStepFwd').disabled = (currentStep === history.length - 1);
+        
+        if (currentStep === history.length - 1) {
+            pausePlayback();
+        }
+    }
+
+    function stepForward() {
+        pausePlayback();
+        if (currentStep < history.length - 1) goToStep(currentStep + 1);
+    }
+
+    function stepBackward() {
+        pausePlayback();
+        if (currentStep > 0) goToStep(currentStep - 1);
+    }
+
+    function seekTo(val) {
+        pausePlayback();
+        goToStep(val);
+    }
+
+    function togglePlayPause() {
+        if (isPlaying) {
+            pausePlayback();
+        } else {
+            if (currentStep >= history.length - 1) goToStep(0); 
+            isPlaying = true;
+            document.getElementById('btnPlayPause').innerHTML = "⏸ Pause";
+            playLoop();
+        }
+    }
+
+    function pausePlayback() {
+        isPlaying = false;
+        clearTimeout(playTimer);
+        document.getElementById('btnPlayPause').innerHTML = "▶ Play";
+    }
+
+    function playLoop() {
+        if (!isPlaying) return;
+        
+        if (currentStep < history.length - 1) {
+            goToStep(currentStep + 1);
+            let speed = parseFloat(document.getElementById('speedSlider').value);
+            let delay = 1000 / speed;
+            if (history[currentStep] && history[currentStep].isVisit) delay *= 1.5; 
+            
+            playTimer = setTimeout(playLoop, delay);
+        } else {
+            pausePlayback();
+        }
+    }
+
+    document.getElementById('speedSlider').addEventListener('input', function(e) {
+        document.getElementById('speedVal').innerText = parseFloat(e.target.value).toFixed(1) + 'x';
+    });
+
+    resetAll();
+
+</script>
+    </div>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto px-6 py-12 border-t border-slate-200 mt-12 flex flex-col md:flex-row justify-between items-center gap-6">
+        <p class="text-slate-500 text-sm">&copy; 2026 Visual LeetCode. Created for algorithm enthusiasts.</p>
+        <div class="flex gap-8">
+            <a href="https://github.com/JackKuo-tw/VisualLeetCode" target="_blank" class="text-slate-400 hover:text-slate-600 transition-colors text-sm font-medium">GitHub</a>
+        </div>
+    </footer>
+</body>
+</html>
